@@ -10,5 +10,10 @@ class homeController extends Controller{
         echo $this->render("home",[]);
     }
 
-
+    function sendmail()
+    {
+        $formData = $_POST;
+        $mail = new MailManager();
+        $mail->sendMail($formData['name'], $formData['email'], $formData['message']);
+    }
 }
