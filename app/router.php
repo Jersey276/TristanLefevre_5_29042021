@@ -19,7 +19,7 @@ class Router {
             $this->router->map('GET', $url, [ 'c' => $controller, 'a' => $function, 'ur' => $userRole], $name);
             return $this;
         }
-        public function Post(string $url, string $controller, string $function, string $userRole = null, ?string $name = null)
+        public function post(string $url, string $controller, string $function, string $userRole = null, ?string $name = null)
         {
             $this->router->map('POST', $url, [ 'c' => $controller, 'a' => $function, 'ur' => $userRole], $name);
             return $this;
@@ -27,13 +27,16 @@ class Router {
 
         public function run() {
             $match = $this->router->match();
+            if ($match != false){
             switch ($match['target']['c']) {
                 case ('homeController') :
                     $controller = new homeController();
                     break;
             };
-
-            call_user_func_array(array($controller,$match['target']['a']), $match);
+            call_user_func_array(array($controller,$match['target']['a']), array());
+            } else {
+                header( $_SERVER["SERVER_PROTOCOL"] . ' 404 Not Found');
+            }
             return $this;
         }
     }
