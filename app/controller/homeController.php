@@ -2,12 +2,11 @@
 
 namespace app\controller;
 
-use app\util\mail\mailManager as MailManager;
+use core\mail\mailManager as MailManager;
 
 class homeController extends Controller{
     function home() {
-
-        echo $this->render("home",[]);
+        print $this->render("home",[]);
     }
 
     function showCV() {
@@ -26,6 +25,7 @@ class homeController extends Controller{
 
     function sendmail()
     {
+        var_dump($_POST);
         $formData = $_POST;
         $mail = new MailManager();
         $mail->sendMail($formData['name'], $formData['email'], $formData['message']);
