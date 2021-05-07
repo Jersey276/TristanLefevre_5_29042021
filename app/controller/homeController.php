@@ -6,7 +6,7 @@ use core\mail\mailManager as MailManager;
 
 class homeController extends Controller{
     function home() {
-        print $this->render("home",[]);
+        print_r($this->render("home",[]));
     }
 
     function showCV() {
