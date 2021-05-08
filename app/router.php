@@ -34,10 +34,9 @@ class Router {
                     break;
             };
             call_user_func_array(array($controller,$match['target']['a']), array());
-            } else {
-                header( $_SERVER["SERVER_PROTOCOL"] . ' 404 Not Found');
-            }
             return $this;
+            }
+            header( filter_input(INPUT_SERVER, "SERVER_PROTOCOL") . ' 404 Not Found');
         }
     }
 ?>
