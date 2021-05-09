@@ -35,7 +35,7 @@ class homeController extends Controller{
         if ($formData != false) 
         {
             $mail = new MailManager();
-            $mail->sendMail($formData['name'], $formData['email'], $formData['message']);
+            $mail->sendMail('tristan-lefevre@hotmail.fr', "contact de ". $formData['name'], $formData['name']. '('. $formData['email'] . ') vous demande : /r/n'. $formData['message']);
             $message = ["type" => "success", "message" => "votre message a bien été envoyé"];
         } else
         {

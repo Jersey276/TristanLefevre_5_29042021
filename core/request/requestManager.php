@@ -21,12 +21,15 @@ class requestManager
 			$conditions = explode("|", $conditionsForm[$postKey]);
 			$tempPost = $posts[$postKey];
 			foreach($conditions as $condition) {
+				if($condition == "optionnal" && $posts[$postKey] = "") {
+					break;
+				}
 				$tempPost = $this->checkAndPreparePost($posts[$postKey],$condition);
 				if (!$tempPost) {
 					return false;
 				}
 			}
-			$post[$postKey] = $tempPost;
+			$posts[$postKey] = $tempPost;
 		}
 		return $posts;
 	}
@@ -34,9 +37,8 @@ class requestManager
 	 * Verify validity of a data and prepare it
 	 * @param mixed variable to check
 	 * @param string condition use to check variable
-	 * @param mixed Optionnal - argument use with conditions
 	 */
-	private function checkAndPreparePost($data, $conditions, $args = null) {
+	private function checkAndPreparePost($data, $conditions) {
 		switch ($conditions)
 		{
 			//check email and clean it
