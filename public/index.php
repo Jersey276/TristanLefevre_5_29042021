@@ -11,4 +11,8 @@ $router
     ->get('/cv','homeController', 'showCV')
     ->post('/contact','homeController', 'sendMail')
     ->get('/test/[i:id]','homeController','test')
+    ->get('/register','userController','registerForm')
+    ->post('/register','userController','register')
+    ->get('/login','userController','loginForm')
+    ->post('/login','userController','login')
     ->run();
