@@ -4,9 +4,9 @@ namespace core\mail;
 
 class mailManager {
 
-    public function sendMail($to, $subject, $message)
+    public function sendMail($receiver, $subject, $message)
     {
         $message = wordwrap($message, 70, "\r\n");
-        mail($to, $subject, $message);
+        mail($receiver, $subject, $message);
     }
 }
