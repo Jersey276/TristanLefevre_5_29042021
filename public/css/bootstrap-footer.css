@@ -1,53 +1,66 @@
 .footer {
-    position: absolute;
-    width: 100%;
-    background-color: #f5f5f5;
-    bottom: 0;
-    height: 60px;
+  position: absolute;
+  width: 100%;
+  background-color: #f5f5f5;
+  bottom: 0;
+  height: 60px;
 }
+
 html {
-    position: relative;
-    min-height: 100%;
+  position: relative;
+  min-height: 100%;
 }
+
 .container {
-	margin-bottom: 4rem;
+  margin-bottom: 4rem;
 }
+
 .footer .container {
-	margin-bottom: 0;
+  margin-bottom: 0;
 }
+
 .footer ul {
-	margin-bottom: 0px;
+  margin-bottom: 0;
 }
+
 .bg-linkedin {
-    background-color: #0e76a8;
+  background-color: #0e76a8;
 }
+
 .text-linkedin {
-    color: #0e76a8;
+  color: #0e76a8;
 }
+
 .btn-linkedin {
-    color: #fff;
-    background-color: #0e76a8;
-    border-color: #0e76a8;
+  color: #fff;
+  background-color: #0e76a8;
+  border-color: #0e76a8;
 }
+
 .bg-github {
-    background-color: #6e5494;
+  background-color: #6e5494;
 }
+
 .text-github {
-    background-color: #6e5494;
+  background-color: #6e5494;
 }
+
 .btn-github {
-    color: #fff;
-    background-color: #6e5494;
-    border-color: #6e5494;
+  color: #fff;
+  background-color: #6e5494;
+  border-color: #6e5494;
 }
+
 .bg-contact {
-    background-color: #ec5e1a;
+  background-color: #ec5e1a;
 }
+
 .text-contact {
-    background-color: #ec5e1a;
+  background-color: #ec5e1a;
 }
+
 .btn-contact {
-    color: #fff;
-    background-color: #ec5e1a;
-    border-color: #ec5e1a;
+  color: #fff;
+  background-color: #ec5e1a;
+  border-color: #ec5e1a;
 }
