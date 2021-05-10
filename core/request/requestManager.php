@@ -11,9 +11,7 @@ class requestManager
 	 */
 	function getPost($conditionsForm) {
 		$posts = filter_input_array(INPUT_POST);
-		$postKeys = array_keys($posts);
-
-		foreach ($postKeys as $postKey)
+		foreach (array_keys($posts) as $postKey)
 		{
 			if (!array_key_exists($postKey, $conditionsForm)) {
 				return false;

@@ -2,10 +2,11 @@
 
 namespace app\controller;
 
+use core\controller\AbstractController;
 use core\mail\mailManager as MailManager;
 use core\request\requestManager as RequestManager;
 
-class homeController extends Controller{
+class homeController extends AbstractController{
     function home() {
         print_r($this->render("home",[]));
     }
@@ -36,11 +37,11 @@ class homeController extends Controller{
         {
             $mail = new MailManager();
             $mail->sendMail('tristan-lefevre@hotmail.fr', "contact de ". $formData['name'], $formData['name']. '('. $formData['email'] . ') vous demande : /r/n'. $formData['message']);
-            $message = ["type" => "success", "message" => "votre message a bien été envoyé"];
+            $message = array("type" => "success", "message" => "votre message a bien été envoyé");
         } else
         {
-            $message = ["type" => "error", "un élément du formulaire n'a pas été correctement inséré"];
+            $message = array("type" => "danger", "message" => "un élément du formulaire n'a pas été correctement inséré");
         }
-        print_r($this->render("home",["message" => $message]));
+        print_r(json_encode($message));
     }
 }
