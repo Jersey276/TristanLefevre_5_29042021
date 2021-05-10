@@ -2,12 +2,13 @@
 
 namespace app\controller;
 
-use app\util\mail\mailManager as MailManager;
+use core\controller\AbstractController;
+use core\mail\mailManager as MailManager;
+use core\request\requestManager as RequestManager;
 
-class homeController extends Controller{
+class homeController extends AbstractController{
     function home() {
-
-        echo $this->render("home",[]);
+        print_r($this->render("home",[]));
     }
 
     function showCV() {
@@ -26,8 +27,21 @@ class homeController extends Controller{
 
     function sendmail()
     {
-        $formData = $_POST;
-        $mail = new MailManager();
-        $mail->sendMail($formData['name'], $formData['email'], $formData['message']);
+        $request = new RequestManager();
+        $formData = $request->getPost([
+            "name" => "string",
+            "email" => "string|email",
+            "message" => "string"
+        ]);
+        if ($formData != false) 
+        {
+            $mail = new MailManager();
+            $mail->sendMail('tristan-lefevre@hotmail.fr', "contact de ". $formData['name'], $formData['name']. '('. $formData['email'] . ') vous demande : /r/n'. $formData['message']);
+            $message = array("type" => "success", "message" => "votre message a bien été envoyé");
+        } else
+        {
+            $message = array("type" => "danger", "message" => "un élément du formulaire n'a pas été correctement inséré");
+        }
+        print_r(json_encode($message));
     }
 }
