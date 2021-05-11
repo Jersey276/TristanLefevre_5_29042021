@@ -1,0 +1,47 @@
+{% extends "/base.twig" %}
+{% block header %}{% endblock %}
+{% block footer %}{% endblock %}
+{% block title %}Inscription{% endblock %}
+{% block content %}
+<style>
+.centered {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  /* bring your own prefixes */
+  transform: translate(-50%, -50%);
+}
+</style>
+	<div class="container centered">
+		<div class="card">
+			<div class="card-body">
+				<h1>Inscription</h1>
+				<hr>
+				<form class="form" method="POST" action="\register">
+					<div class="form-group">
+						<label for="pseudo">Identifiant</label>
+						<input type="text" class="form-control" name="pseudo" required>
+					</div>
+					<div class="form-group">
+						<label for="email">Adresse mail</label>
+						<input type="email" class="form-control" name="email" required>
+					</div>
+					<div class="form-row">
+						<div class="col">
+							<label for="password">Mot de passe</label>
+							<input type="password" class="form-control" name="password" required>
+						</div>
+						<div class="col">
+							<label for="confirm-password">Confirmer le mot de passe</label>
+							<input type="password" class="form-control" name="confirm-password" required>
+						</div>
+					</div>
+					<div>
+						<p>Déja inscrit ? <a href="/login">Connecte-toi</a></p>
+						<button type="submit" class ="btn btn-primary">S'inscrire</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+{% endblock %}

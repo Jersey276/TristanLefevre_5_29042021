@@ -8,7 +8,7 @@ use core\request\requestManager as RequestManager;
 
 class homeController extends AbstractController{
     function home() {
-        print_r($this->render("home",[]));
+        return print_r($this->render("home"));
     }
 
     function showCV() {
@@ -42,6 +42,6 @@ class homeController extends AbstractController{
         {
             $message = array("type" => "danger", "message" => "un élément du formulaire n'a pas été correctement inséré");
         }
-        print_r(json_encode($message));
+        return print_r(json_encode($message));
     }
 }

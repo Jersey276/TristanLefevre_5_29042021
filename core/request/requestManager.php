@@ -9,7 +9,8 @@ class requestManager
 	 * @return array of all post variable checked and valided
 	 * @return false if a var is problematic 
 	 */
-	function getPost($conditionsForm) {
+	function getPost($conditionsForm)
+	{
 		$posts = filter_input_array(INPUT_POST);
 		foreach (array_keys($posts) as $postKey)
 		{
@@ -36,7 +37,8 @@ class requestManager
 	 * @param mixed variable to check
 	 * @param string condition use to check variable
 	 */
-	private function checkAndPreparePost($data, $conditions) {
+	private function checkAndPreparePost($data, $conditions)
+	{
 		switch ($conditions)
 		{
 			//check email and clean it
@@ -51,5 +53,21 @@ class requestManager
 				return htmlentities($data);
 				break;
 		}
+	}
+	function Session($key, $val = null)
+	{
+		if (isset($val))
+		{
+			$_SESSION[$key] = $val;
+		}
+		return filter_var($_SESSION[$key]);
+	}
+	function isSetSession($key)
+	{
+		if(isset($key))
+		{
+			return true;
+		}
+		return false;
 	}
 }

@@ -4,6 +4,7 @@ namespace app;
 
 use AltoRouter;
 use app\controller\homeController;
+use app\controller\userController;
 
 class Router {
 
@@ -32,8 +33,11 @@ class Router {
                 case ('homeController') :
                     $controller = new homeController();
                     break;
+                case ('userController') :
+                    $controller = new userController();
+                    break;
             };
-            call_user_func_array(array($controller,$match['target']['a']), array());
+            call_user_func_array(array($controller,$match['target']['a']), $match['params']);
             return $this;
             }
             header( filter_input(INPUT_SERVER, "SERVER_PROTOCOL") . ' 404 Not Found');
