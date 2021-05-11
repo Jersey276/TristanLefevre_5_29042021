@@ -33,7 +33,7 @@ class authentificationManager
 		$query = new SelectQuery('select');
 		$statement = $query->select('user.pseudo','user.email','user.password','role.nameRole as role')->from('user')->leftjoin('role','role.idRole = user.idRole')->where("pseudo = '".$login."'")->toString();
 		$account = $this->database->prepare($statement, null,"select", "user", true);
-		if ( $login == $account['pseudo'] && password_verify($password, $account['password']) || $login == $account['email'] && password_verify($password, $account['password'])) {
+		if ( $login == $account['pseudo'] && password_verify($password, $account['password'])) {
 			$session = new requestManager();
 			$session->session('pseudo', $account['pseudo']);
 			$session->session('email', $account['email']);

@@ -7,7 +7,6 @@ class SelectQuery
     private $conditions = [];
     private $from = [];
     private $join = [];
-    private $separator = [];
 
     public function select()
     {
@@ -35,17 +34,7 @@ class SelectQuery
         }
         return $this;
     }
-    public function and()
-    {
-        $this->separator[] = 'and';
-        return $this;
-    }
 
-    public function or()
-    {
-        $this->separator[] = 'or';
-        return $this;
-    }
     public function leftJoin($table, $arg)
     {
         $this->join[] = ' LEFT JOIN ' . $table . ' ON ' . $arg;
@@ -54,27 +43,10 @@ class SelectQuery
 
     public function toString()
     {
-        $message = 'SELECT '. implode(', ', $this->fields)
-            . ' FROM ' . implode(', ', $this->from) . implode('', $this->join);
-
-        if (!empty($separator))
-        {
-            $message = $message . ' WHERE ' . $conditions[0];
-            for ($i = 0; $i < count($separator); $i++)
-            {
-                switch ($separator[$i])
-                {
-                    case 'and':
-                        $message = $message . 'AND' . $conditions[$i++];
-                        break;
-                    case 'or':
-                        $message = $message . 'OR' . $conditions[$i++];
-                        break;
-                }
-            }
-            return $message;
-        }
-        return $message . ' WHERE ' . implode(' AND ', $this->conditions);
+        return 'SELECT '. implode(', ', $this->fields)
+            . ' FROM ' . implode(', ', $this->from) 
+            . implode('', $this->join) 
+            . ' WHERE ' . implode(' AND ', $this->conditions);
 
     }
 }
