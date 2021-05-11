@@ -31,7 +31,7 @@ class userController extends AbstractController{
 				'confirm' => $post['confirm-password'],
 				'message' => "un problème a eu lieu avec vos données, veuiller ressayer"
 				]));
-			exit;
+			exit(1);
 		}
 		if ($post['password'] != $post['confirm-password']) {
 			print_r($this->render('auth/registerForm', [ 
@@ -41,7 +41,7 @@ class userController extends AbstractController{
 				'confirm' => $post['confirm-password'],
 				'message' => "le mot de passe et sa confirmation ne sont pas identiques"
 				]));
-			exit;
+			exit(2);
 		}
 		$dbConnexion = APP::getDBConnector();
 		$auth = authentificationManager::getInstance(new databaseManager($dbConnexion['db_host'], $dbConnexion['db_base'],$dbConnexion["db_user"],$dbConnexion["db_pass"]));
@@ -70,10 +70,12 @@ class userController extends AbstractController{
 		}
 		$dbConnexion = APP::getDBConnector();
 		$auth = authentificationManager::getInstance(new databaseManager($dbConnexion['db_host'], $dbConnexion['db_base'],$dbConnexion["db_user"],$dbConnexion["db_pass"]));
-		if ($auth->login($post["pseudo"], $post["password"])) {
+		$awnser = $auth->login($post["pseudo"], $post["password"])
+		if ($awnser['isConnected']) {
 			print_r ($this->render("home",[]));	
+		} else {
+			print_r($this->render("home",['message' => $awnser['message']]));
 		}
-		print_r("false");
 	}
 
 }

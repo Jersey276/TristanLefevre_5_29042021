@@ -2,7 +2,7 @@
 
 require '..\app\app.php';
 
-APP::load();
+app\APP::load();
 use app\Router;
 
 $router = new Router();
