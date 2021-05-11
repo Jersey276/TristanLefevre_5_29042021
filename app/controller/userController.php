@@ -24,37 +24,35 @@ class userController extends AbstractController{
 			'confirm-password' => 'string' 
 		]);
 		if ($post == false) {
-			print_r($this->render('auth/registerForm', [ 
+			return print_r($this->render('auth/registerForm', [ 
 				'pseudo' => $post['pseudo'], 
 				'email' => $post['email'], 
 				'password' => $post['password'],
 				'confirm' => $post['confirm-password'],
 				'message' => "un problème a eu lieu avec vos données, veuiller ressayer"
 				]));
-			exit(1);
 		}
 		if ($post['password'] != $post['confirm-password']) {
-			print_r($this->render('auth/registerForm', [ 
+			return print_r($this->render('auth/registerForm', [ 
 				'pseudo' => $post['pseudo'], 
 				'email' => $post['email'], 
 				'password' => $post['password'],
 				'confirm' => $post['confirm-password'],
 				'message' => "le mot de passe et sa confirmation ne sont pas identiques"
 				]));
-			exit(2);
 		}
 		$dbConnexion = APP::getDBConnector();
 		$auth = authentificationManager::getInstance(new databaseManager($dbConnexion['db_host'], $dbConnexion['db_base'],$dbConnexion["db_user"],$dbConnexion["db_pass"]));
 		if ($auth->register($post["pseudo"], $post["password"], $post["email"]))
 		{
 
-			print_r($this->render("message", ['type' => 'success', 'message' => 'un message à été envoyé pour valider votre adresse mail.', 'btnReturn' => '\login', 'btnMessage' => "se connecter"]));
+			return print_r($this->render("message", ['type' => 'success', 'message' => 'un message à été envoyé pour valider votre adresse mail.', 'btnReturn' => '\login', 'btnMessage' => "se connecter"]));
 		}
 
 	}
 	public function loginForm()
 	{
-		print_r($this->render('auth/loginForm'));
+		return print_r($this->render('auth/loginForm'));
 	}
 	public function login()
 	{
@@ -65,16 +63,15 @@ class userController extends AbstractController{
 		]);
 		if($post == false)
 		{
-			print_r($this->render('auth/loginForm', ['message' => "un problème a eu lieu avec vos données, veuiller ressayer"]));
-			exit;
+			return print_r($this->render('auth/loginForm', ['message' => "un problème a eu lieu avec vos données, veuiller ressayer"]));
 		}
 		$dbConnexion = APP::getDBConnector();
 		$auth = authentificationManager::getInstance(new databaseManager($dbConnexion['db_host'], $dbConnexion['db_base'],$dbConnexion["db_user"],$dbConnexion["db_pass"]));
-		$awnser = $auth->login($post["pseudo"], $post["password"])
-		if ($awnser['isConnected']) {
-			print_r ($this->render("home",[]));	
+		$awnser = $auth->login($post["pseudo"], $post["password"]);
+		if($awnser['isConnected']) {
+			return print_r ($this->render("home",[]));	
 		} else {
-			print_r($this->render("home",['message' => $awnser['message']]));
+			return print_r($this->render("home",['message' => $awnser['message']]));
 		}
 	}
 
