@@ -1,0 +1,37 @@
+{% extends "/base.twig" %}
+{% block header %}{% endblock %}
+{% block footer %}{% endblock %}
+{% block title %}Connexion{% endblock %}
+{% block content %}
+<style>
+.centered {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  /* bring your own prefixes */
+  transform: translate(-50%, -50%);
+}
+</style>
+	<div class="container centered">
+		<div class="card">
+			<div class="card-body">
+				<h1>Connexion</h1>
+				<hr>
+				<form class="form" method="POST" action="\login">
+					<div class="form-group">
+						<label for="pseudo">Pseudonyme/ adresse mail</label>
+						<input type="text" class="form-control"  name="pseudo" required>
+					</div>
+					<div class="form-group">
+						<label for="password">mot de passe</label>
+						<input type="password" class="form-control" name="password" required>
+					</div>
+					<div class="">
+						<p class="pb-0">Pas encore inscrit ? <a href="/register">Inscris-toi</a></p>
+						<button type="submit" class ="btn btn-primary">Se connecter</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+{% endblock %}

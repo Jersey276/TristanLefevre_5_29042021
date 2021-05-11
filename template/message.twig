@@ -1,0 +1,11 @@
+{% extends "base.twig" %}
+
+{% block title %}Acceuil{% endblock %}
+{% block content %}
+	<div class="container">
+		<div class="alert alert-{{ type }}" role="alert"> 
+			{{ message }} <br>
+			<a href={{ btnReturn }} class="btn btn-{{ type }}"> {{ btnMessage }}</a>
+		</div>
+	</div>
+{% endblock %}
