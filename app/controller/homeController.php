@@ -8,7 +8,7 @@ use core\request\requestManager as RequestManager;
 
 class homeController extends AbstractController{
     function home() {
-        print_r($this->render("home",[]));
+        print_r($this->render("home"));
     }
 
     function showCV() {
