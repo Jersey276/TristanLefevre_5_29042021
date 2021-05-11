@@ -17,6 +17,11 @@
 			<div class="card-body">
 				<h1>Connexion</h1>
 				<hr>
+				{% if message != null %}
+					<div class="alert alert-danger">
+						{{ message }}
+					</div>
+				{% endif %}
 				<form class="form" method="POST" action="\login">
 					<div class="form-group">
 						<label for="pseudo">Identifiant</label>
@@ -25,6 +30,7 @@
 					<div class="form-group">
 						<label for="password">Mot de passe</label>
 						<input type="password" class="form-control" name="password" required>
+						<p><a href="/forgotPassword"> Mot de passe oublié ?</a></p>
 					</div>
 					<div class="">
 						<p class="pb-0">Pas encore inscrit ? <a href="/register">Inscris-toi</a></p>
