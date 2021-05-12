@@ -18,14 +18,14 @@
 				<h1>Connexion</h1>
 				<hr>
 				{% if message != null %}
-					<div class="alert alert-danger">
-						{{ message }}
+					<div class="alert alert-{{ message.type }}">
+						{{ message.text }}
 					</div>
 				{% endif %}
 				<form class="form" method="POST" action="\login">
 					<div class="form-group">
 						<label for="pseudo">Identifiant</label>
-						<input type="text" class="form-control"  name="pseudo" required>
+						<input type="text" class="form-control"  name="pseudo" value="{{ pseudo }}" required>
 					</div>
 					<div class="form-group">
 						<label for="password">Mot de passe</label>

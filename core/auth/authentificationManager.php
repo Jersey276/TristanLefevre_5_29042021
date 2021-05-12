@@ -33,15 +33,19 @@ class authentificationManager
 	public function login($login, $password) 
 	{
 		$query = new SelectQuery('select');
-		$statement = $query->select('user.pseudo','user.email','user.password','role.nameRole as role')->from('user')->leftjoin('role','role.idRole = user.idRole')->where("pseudo = '".$login."'")->toString();
+		$statement = $query->select('user.pseudo','user.email','user.password','role.nameRole as role','user.isEmailChecked')->from('user')->leftjoin('role','role.idRole = user.idRole')->where("pseudo = '".$login."'")->toString();
 		$account = $this->database->prepare($statement, null,"select", "user", true);
 		if ( $login == $account['pseudo'] && password_verify($password, $account['password']))
 		{
-			$session = new requestManager();
-			$session->session('pseudo', $account['pseudo']);
-			$session->session('email', $account['email']);
-			$session->session('role', $account['role']);
-			return ['isConnected' => true];
+			if($account['isEmailChecked'] == true) 
+			{
+				$session = new requestManager();
+				$session->session('pseudo', $account['pseudo']);
+				$session->session('email', $account['email']);
+				$session->session('role', $account['role']);
+				return ['isConnected' => true];
+			}
+			return ['isConnected' => false, 'message' => "l'adresse mail n'a pas été vérifié, consulter vos mails"];
 		}
 		return [ 'isConnected' => false, 'message' => 'identifiant / mot de passe incorrect, veuiller ressayer'];
     }
@@ -60,8 +64,7 @@ class authentificationManager
 		{
 			case 'password' :
 				// Search account concerned with this email
-				$querySearch = new SelectQuery();
-				$statementSearch = $querySearch->select('*')->from('user')->where("email = '". $arg."'")->toString();
+				$statementSearch = (new SelectQuery())->select('*')->from('user')->where("email = '". $arg."'")->toString();
 				$account = $this->database->prepare($statementSearch, null,"select", "user", true);
 				if ($account != false) {
 					$token = tokenGenerator::strRandom();
@@ -77,8 +80,7 @@ class authentificationManager
 				$type = 2;
 				break;
 		}
-		$queryInsert = new InsertQuery();
-		$statement = $queryInsert->insertInto('token')->key('idUser','token','idTokenType')->value($idUser,$token,2)->toString();
+		$statement = (new InsertQuery())->insertInto('token')->key('idUser','token','idTokenType')->value($idUser,$token,2)->toString();
 		if($this->database->prepare($statement,null,"insert",null,true))
 		{
 			return ($token);
@@ -86,15 +88,22 @@ class authentificationManager
 		return false;
 	}
 
-	public function resetPassword($token, $password)
+	public function useToken($token, $function, $password = null)
 	{
-		$newPassword = password_hash($password, PASSWORD_BCRYPT);
-		$statement = (new UpdateQuery())->update("user")->set("password = '" . $newPassword . "'")->where("idUser ='" . $token['idUser'] . "'")->toString();
-		if($this->database->prepare($statement, null, "update", null)) {
-			$deleteQuery = (new DeleteQuery())->delete('token')->where("idToken = ". $token['idToken'])->toString();
-			$this->database->prepare($deleteQuery, null, "delete", null, true);
+		switch($function)
+		{
+			case 'changePassword':
+				$set = "password = '" . password_hash($password, PASSWORD_BCRYPT) . "'";
+				break;
+			case 'validEmail' :
+				$set = "isEmailChecked = true";
+				break;
+		}
+		$statement = (new UpdateQuery())->update("user")->set($set)->where("idUser =" . $token['idUser'])->toString();
+		if ($this->database->prepare($statement, null, "update", null)) {
+			$this->database->prepare((new DeleteQuery())->delete('token')->where("idToken = ". $token['idToken'])->toString(),null,"delete",null,true);
 			return true;
 		}
-		return false;
+
 	}
 }

@@ -57,7 +57,7 @@ class databaseManager{
         }
         return true;
         } catch (Exception $e) {
-            return $e->getMessage();
+            return false;
         }
     }
 }
