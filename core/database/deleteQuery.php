@@ -2,14 +2,14 @@
 
 namespace core\database;
 
-class deleteQuery
+class DeleteQuery
 {
 	private $table;
 	private $conditions = [];
 
 	public function delete($table)
 	{
-		$this->$table = $table;
+		$this->table = $table;
 		return $this;
 	}
 
@@ -24,8 +24,8 @@ class deleteQuery
 
 	public function toString()
 	{
-		return "DELETE " . $table
-			. " WHERE " . implode(', ', $conditions);
+		return "DELETE FROM " . $this->table
+			. " WHERE " . implode(', ', $this->conditions);
 	}
 }
 ?>

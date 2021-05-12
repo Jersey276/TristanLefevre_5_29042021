@@ -1,12 +1,8 @@
 <?php
 
-UPDATE table
-SET colonne_1 = 'valeur 1', colonne_2 = 'valeur 2', colonne_3 = 'valeur 3'
-WHERE condition
-
 namespace core\database;
 
-class updateQuery()
+class UpdateQuery
 {
 	private $table;
 	private $set = [];
@@ -14,6 +10,7 @@ class updateQuery()
 
 	public function update($table)
 	{
+		$this->table = $table;
 		return $this;
 	}
 
@@ -37,9 +34,9 @@ class updateQuery()
 
 	public function toString()
 	{
-		return 'UPDATE ' . $table
-			. ' SET ' . implode(', ', $set)
-			. ' WHERE ' . implode(',', $conditions);
+		return 'UPDATE ' . $this->table
+			. ' SET ' . implode(', ', $this->set)
+			. ' WHERE ' . implode(',', $this->conditions);
 	}
 }
 ?>
