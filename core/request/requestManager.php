@@ -48,9 +48,8 @@ class requestManager
 				}
 				return false;
 				break;
-			//clean string of all unusual characters and injection try
 			case "string" :
-				return htmlentities($data);
+				return htmlentities($data, ENT_QUOTES);
 				break;
 		}
 	}
