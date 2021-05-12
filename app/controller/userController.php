@@ -7,6 +7,7 @@ use core\request\requestManager;
 use core\auth\authentificationManager;
 use core\mail\mailManager;
 use core\database\databaseManager;
+use core\database\selectQuery;
 use app\app;
 
 class userController extends AbstractController{
@@ -16,8 +17,7 @@ class userController extends AbstractController{
 	}
 	public function register()
 	{
-		$request = new requestManager();
-		$post = $request->getPost([
+		$post = (new requestManager())->getPost([
 			'pseudo' => 'string',
 			'email' => 'string|email',
 			'password' => 'string',
@@ -27,8 +27,6 @@ class userController extends AbstractController{
 			return print_r($this->render('auth/registerForm', [ 
 				'pseudo' => $post['pseudo'], 
 				'email' => $post['email'], 
-				'password' => $post['password'],
-				'confirm' => $post['confirm-password'],
 				'message' => "un problème a eu lieu avec vos données, veuiller ressayer"
 				]));
 		}
@@ -36,13 +34,10 @@ class userController extends AbstractController{
 			return print_r($this->render('auth/registerForm', [ 
 				'pseudo' => $post['pseudo'], 
 				'email' => $post['email'], 
-				'password' => $post['password'],
-				'confirm' => $post['confirm-password'],
 				'message' => "le mot de passe et sa confirmation ne sont pas identiques"
 				]));
 		}
-		$dbConnexion = APP::getDBConnector();
-		$auth = authentificationManager::getInstance(new databaseManager($dbConnexion['db_host'], $dbConnexion['db_base'],$dbConnexion["db_user"],$dbConnexion["db_pass"]));
+		$auth = authentificationManager::getInstance(new databaseManager());
 		if ($auth->register($post["pseudo"], $post["password"], $post["email"]))
 		{
 
@@ -56,8 +51,7 @@ class userController extends AbstractController{
 	}
 	public function login()
 	{
-		$request = new requestManager();
-		$post = $request->getPost([
+		$post = (new requestManager())->getPost([
 			"pseudo" => "string",
 			"password" => "string"
 		]);
@@ -65,14 +59,67 @@ class userController extends AbstractController{
 		{
 			return print_r($this->render('auth/loginForm', ['message' => "un problème a eu lieu avec vos données, veuiller ressayer"]));
 		}
-		$dbConnexion = APP::getDBConnector();
-		$auth = authentificationManager::getInstance(new databaseManager($dbConnexion['db_host'], $dbConnexion['db_base'],$dbConnexion["db_user"],$dbConnexion["db_pass"]));
+		$auth = authentificationManager::getInstance(new databaseManager());
 		$awnser = $auth->login($post["pseudo"], $post["password"]);
 		if($awnser['isConnected']) {
 			return print_r ($this->render("home",[]));	
 		} else {
-			return print_r($this->render("home",['message' => $awnser['message']]));
+			return print_r($this->render("auth/loginForm",['message' => $awnser['message']]));
 		}
 	}
-
+	public function forgotPasswordForm()
+	{
+		return print_r($this->render('auth/forgotPasswordForm'));
+	}
+	public function forgotPassword()
+	{
+		$request = new requestManager();
+		$post = (new requestManager())->getPost([
+			'email' => 'string|email'
+		]);
+		$auth = authentificationManager::getInstance(new databaseManager());
+		$mail = new mailManager();
+		if($post == false)
+		{
+			return print_r($this->render("auth/forgotPasswordForm",['message' => 'un problème a eu lieu avec vos données, veuiller ressayer']));
+		}
+		$token = $auth->askToken("password",$post['email']);
+		if ($token != false)
+		{
+			mailManager::sendmail($post['email'],"nouveau mot de passe","Vous avez demandé de changer le mot de passe, voici un lien pour le faire : <a href='" . filter_input(INPUT_SERVER, 'SERVER_NAME').'/forgotPassword/'. $token . "'>changer mon mot de passe<a>");
+		}
+		return print_r($this->render("message", ['type' => 'warning', 'message' => 'un message à été envoyé pour changer votre mot de passe.', 'btnReturn' => '\login', 'btnMessage' => "se connecter"]));
+	}
+	public function changePasswordForm($token)
+	{
+		$database = new databaseManager();
+		$token = $database->prepare((new SelectQuery())->select('*')->from('token')->where("token = '" . $token . "'")->toString(), null,"select","token",true);
+		if ($token != false)
+		{
+			return print_r($this->render('auth/changePasswordForm',['token' => $token['token']]));
+		}
+		return header( filter_input(INPUT_SERVER, "SERVER_PROTOCOL") . ' 404 Not Found');
+	}
+	public function changePassword($token)
+	{
+		$database = new databaseManager();
+		$auth = authentificationManager::getInstance($database);
+		$post = (new requestManager($database))->getPost([
+			'password' => 'string',
+			'confirm-password' => 'string' 
+		]);
+		if ($post['password'] != $post['confirm-password']) {
+			return print_r($this->render('auth/registerForm', [ 
+				'pseudo' => $post['pseudo'], 
+				'email' => $post['email'], 
+				'message' => "le mot de passe et sa confirmation ne sont pas identiques"
+				]));
+		}
+		$token = $database->prepare((new SelectQuery())->select('*')->from('token')->where("token = '" . $token . "'")->toString(), null,"select","token",true);
+		if ($auth->resetPassword($token, $post['password']))
+		{
+			return print_r($this->render("message", ['type' => 'success', 'message' => 'Le mot de passe à été mis à jour', 'btnReturn' => '\login', 'btnMessage' => "se connecter"]));
+		}
+		return print_r($this->render("message",['type' => 'success', 'message' => 'une erreur à eu lieu lors de la modification du formulaire']));
+	}
 }

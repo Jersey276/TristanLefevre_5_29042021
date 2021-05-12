@@ -15,4 +15,8 @@ $router
     ->post('/register','userController','register')
     ->get('/login','userController','loginForm')
     ->post('/login','userController','login')
+    ->get('/forgotPassword','userController','forgotPasswordForm')
+    ->post('/forgotPassword','userController','forgotPassword')
+    ->get('/forgotPassword/[a:token]','userController','changePasswordForm')
+    ->post('/forgotPassword/[a:token]','userController','changePassword')
     ->run();
