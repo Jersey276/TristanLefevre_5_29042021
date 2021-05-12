@@ -25,8 +25,12 @@ class databaseManager{
         if(self::$pdo == null)
         {
             //$pdo = new PDO('mysql:dbname='. $this->db_name .';host='. $this->db_host. '', $this->db_user, $this->db_pass);
-            $pdo = new PDO('mysql:dbname=phpblog;host=localhost', 'root', 'root');
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            try {
+                $pdo = new PDO('mysql:dbname=phpblog;host=localhost', 'root', 'root');
+                $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            } catch (PDOException $e) {
+                echo 'Échec lors de la connexion : ' . $e->getMessage();
+            }
             self::$pdo = $pdo;
         }
         return self::$pdo;
@@ -38,18 +42,22 @@ class databaseManager{
         return $req->fetchAll(PDO::FETCH_CLASS, $classname);
     }
 
-    public function prepare($query, $attribute, $type, $classname, $isOnly = false)
+    public function prepare($query, $attribute, $type, $classname, $isOnly = false, $askReturn = false)
     {
+        try {
         $req = $this->getPDO()->prepare($query);
         $req->execute($attribute);
-        if ($type == "select") {
+        if ($type == "select" || $askReturn) {
             $req->setFetchMode(PDO::FETCH_CLASS, $classname);
             if ($isOnly)
             {
-                return $req->fetch();
+                return $req->fetch(PDO::FETCH_ASSOC);
             }
             return $req->fetchAll();
         }
         return true;
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
     }
 }
