@@ -65,7 +65,7 @@ class authentificationManager
 				$account = $this->database->prepare($statementSearch, null,"select", "user", true);
 				if ($account != false) {
 					$token = tokenGenerator::strRandom();
-					$id = $account['idUser'];
+					$idUser = $account['idUser'];
 					$type = 1;
 					break;
 				}
@@ -73,12 +73,12 @@ class authentificationManager
 				break;
 			case 'email' :
 				$token = tokenGenerator::strRandom();
-				$id = $arg;
+				$idUser = $arg;
 				$type = 2;
 				break;
 		}
 		$queryInsert = new InsertQuery();
-		$statement = $queryInsert->insertInto('token')->key('idUser','token','idTokenType')->value($id,$token,2)->toString();
+		$statement = $queryInsert->insertInto('token')->key('idUser','token','idTokenType')->value($idUser,$token,2)->toString();
 		if($this->database->prepare($statement,null,"insert",null,true))
 		{
 			return ($token);

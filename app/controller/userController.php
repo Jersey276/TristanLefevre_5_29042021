@@ -73,12 +73,10 @@ class userController extends AbstractController{
 	}
 	public function forgotPassword()
 	{
-		$request = new requestManager();
 		$post = (new requestManager())->getPost([
 			'email' => 'string|email'
 		]);
 		$auth = authentificationManager::getInstance(new databaseManager());
-		$mail = new mailManager();
 		if($post == false)
 		{
 			return print_r($this->render("auth/forgotPasswordForm",['message' => 'un problème a eu lieu avec vos données, veuiller ressayer']));
