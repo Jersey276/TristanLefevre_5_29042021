@@ -6,7 +6,7 @@ use core\request\requestManager;
 
 class roleChecker
 {
-	private const roleRule = [ 
+	private const RoleRule = [ 
 		'User' =>  ['User','Writer','Admin'],
 		'Writer' => ['Writer', 'Admin'],
 		'Admin' => ['Admin']
@@ -16,7 +16,7 @@ class roleChecker
 	{
 		$request = new requestManager();
 		if ($request->isSetSession('role')) {
-			if (in_array($request->session('role'),self::roleRule[$role]))
+			if (in_array($request->session('role'),self::RoleRule[$role]))
 			{
 				return true;
 			}

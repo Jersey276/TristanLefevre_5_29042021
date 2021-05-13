@@ -13,7 +13,7 @@ use app\app;
 class authController extends AbstractController{
 	public function registerForm()
 	{
-		print_r($this->render('auth/registerForm'));
+		print_r($this->render('auth/registerForm',['CSRFToken' => (new requestManager())->newCSRFToken()]));
 	}
 	public function register()
 	{
@@ -21,14 +21,16 @@ class authController extends AbstractController{
 			'pseudo' => 'string',
 			'email' => 'string|email',
 			'password' => 'string',
-			'confirm-password' => 'string' 
+			'confirm-password' => 'string',
+			'CSRFtoken' => 'string|token'
 		]);
 		if ($post == false)
 		{
 			return print_r($this->render('auth/registerForm', [ 
 				'pseudo' => $post['pseudo'], 
 				'email' => $post['email'], 
-				'message' => "un problème a eu lieu avec vos données, veuiller ressayer"
+				'message' => "un problème a eu lieu avec vos données, veuiller ressayer",
+				'CSRFtoken' => (new requestManager())->newCSRFToken()
 				]));
 		}
 		if ($post['password'] != $post['confirm-password'])
@@ -36,7 +38,8 @@ class authController extends AbstractController{
 			return print_r($this->render('auth/registerForm', [ 
 				'pseudo' => $post['pseudo'], 
 				'email' => $post['email'], 
-				'message' => "le mot de passe et sa confirmation ne sont pas identiques"
+				'message' => "le mot de passe et sa confirmation ne sont pas identiques",
+				'CSRFtoken' => (new requestManager())->newCSRFToken()
 				]));
 		}
 		$database = new databaseManager();
@@ -57,38 +60,44 @@ class authController extends AbstractController{
 	}
 	public function loginForm()
 	{
-		return print_r($this->render('auth/loginForm'));
+		return print_r($this->render('auth/loginForm',['CSRFToken' => (new requestManager)->newCSRFToken()]));
 	}
 	public function login()
 	{
 		$post = (new requestManager())->getPost([
 			"pseudo" => "string",
-			"password" => "string"
+			"password" => "string",
+			"CSRFtoken" => "string|token"
 		]);
 		if($post == false)
 		{
-			return print_r($this->render('auth/loginForm', ['message' => [ "type" => "danger", "text" => "un problème a eu lieu avec vos données, veuiller ressayer"]]));
+			return print_r($this->render('auth/loginForm', [
+				'message' => [ "type" => "danger", "text" => "un problème a eu lieu avec vos données, veuiller ressayer"], 'CSRFtoken' => (new requestManager())->newCSRFToken()
+			]));
 		}
 		$auth = authentificationManager::getInstance(new databaseManager());
 		$awnser = $auth->login($post["pseudo"], $post["password"]);
 		if($awnser['isConnected']) {
 			return header('Location:' . "/");	
 		}
-		return print_r($this->render("auth/loginForm",['message' => ['type' => 'danger', 'text' => $awnser['message']]]));
+		return print_r($this->render("auth/loginForm",['message' => ['type' => 'danger', 'text' => $awnser['message'], 'CSRFtoken' => (new requestManager())->newCSRFToken()]]));
 	}
 	public function forgotPasswordForm()
 	{
-		return print_r($this->render('auth/forgotPasswordForm'));
+		$CSRFtoken = (new requestManager)->newCSRFToken();
+		return print_r($this->render('auth/forgotPasswordForm', ['CSRFtoken' => $CSRFtoken ]));
 	}
 	public function forgotPassword()
 	{
 		$post = (new requestManager())->getPost([
-			'email' => 'string|email'
+			'email' => 'string|email',
+			'CSRFtoken' => 'string|token'
+
 		]);
 		$auth = authentificationManager::getInstance(new databaseManager());
 		if($post == false)
 		{
-			return print_r($this->render("auth/forgotPasswordForm",['message' => 'un problème a eu lieu avec vos données, veuiller ressayer']));
+			return print_r($this->render("auth/forgotPasswordForm",['message' => 'un problème a eu lieu avec vos données, veuiller ressayer', 'CSRFtoken' => (new requestManager())->newCSRFToken()]));
 		}
 		$token = $auth->askToken("password",$post['email']);
 		if ($token != false)
@@ -103,7 +112,7 @@ class authController extends AbstractController{
 		$token = $database->prepare((new SelectQuery())->select('*')->from('token')->where("token = '" . $token . "'")->toString(), null,"select","token",true);
 		if ($token != false)
 		{
-			return print_r($this->render('auth/changePasswordForm',['token' => $token['token']]));
+			return print_r($this->render('auth/changePasswordForm',['token' => $token['token'], 'CSRFToken' => (new requestManager)->newCSRFToken()]));
 		}
 		return header( filter_input(INPUT_SERVER, "SERVER_PROTOCOL") . ' 404 Not Found');
 	}
@@ -111,15 +120,26 @@ class authController extends AbstractController{
 	{
 		$database = new databaseManager();
 		$auth = authentificationManager::getInstance($database);
-		$post = (new requestManager($database))->getPost([
+		$post = (new requestManager())->getPost([
 			'password' => 'string',
-			'confirm-password' => 'string' 
+			'confirm-password' => 'string',
+			'CSRFtoken' => 'string|token'
 		]);
+		if ($post == false)
+		{
+		return print_r($this->render('auth/registerForm', [ 
+			'pseudo' => $post['pseudo'], 
+			'email' => $post['email'], 
+			'message' => "le mot de passe et sa confirmation ne sont pas identiques",
+			'token' => (new requestManager())->newCSRFToken()
+				]));
+		}
 		if ($post['password'] != $post['confirm-password']) {
 			return print_r($this->render('auth/registerForm', [ 
 				'pseudo' => $post['pseudo'], 
 				'email' => $post['email'], 
-				'message' => "le mot de passe et sa confirmation ne sont pas identiques"
+				'message' => "le mot de passe et sa confirmation ne sont pas identiques",
+				'CSRFtoken' => (new requestManager())->newCSRFToken()
 				]));
 		}
 		$token = $database->prepare((new SelectQuery())->select('*')->from('token')->where("token = '" . $token . "'")->toString(), null,"select","token",true);

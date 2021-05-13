@@ -51,6 +51,9 @@ class requestManager
 			case "string" :
 				return htmlentities($data, ENT_QUOTES);
 				break;
+			case "token" :
+				return $this->checkCSRFToken($data, 600);
+				break;
 		}
 	}
 	function Session($key, $val = null)
@@ -68,5 +71,20 @@ class requestManager
 	function killSession()
 	{
 		return session_destroy();
+	}
+	function newCSRFToken()
+	{
+		$token = uniqid(rand(), true);
+		$this->Session('token', $token);
+		$this->Session('token_time', time());
+		return $token;
+	}
+	function checkCSRFToken($postToken, $time)
+	{
+		if($this->Session('token') != null && $this->Session('token_time') != null && isset($postToken))
+			if($this->Session('token') == $postToken)
+				if($this->Session('token_time') >= (time() - $time))
+					return true;
+		return false;
 	}
 }
