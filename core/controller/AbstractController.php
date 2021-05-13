@@ -2,7 +2,7 @@
 
 namespace core\controller;
 
-use authentificationManager;
+use core\controller\ProjectTwigExtension;
 
 abstract class AbstractController {
 
@@ -14,6 +14,7 @@ abstract class AbstractController {
         $loader = new \Twig\Loader\FilesystemLoader(dirname(__DIR__, 2).'/template');
         $twig = new \Twig\Environment($loader, [
         ]);
+        $twig->addExtension(new ProjectTwigExtension());
         $template = $twig->load($view . ".twig");
         return $template->render($data);
     }

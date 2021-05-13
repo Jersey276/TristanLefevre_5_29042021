@@ -10,7 +10,7 @@ use core\database\databaseManager;
 use core\database\selectQuery;
 use app\app;
 
-class userController extends AbstractController{
+class authController extends AbstractController{
 	public function registerForm()
 	{
 		print_r($this->render('auth/registerForm'));
@@ -139,5 +139,10 @@ class userController extends AbstractController{
 			return print_r($this->render("message", ['type' => 'success', 'message' => 'Votre adresse mail a été vérifié, vous pouvez vous connecter', 'btnReturn' => '\login', 'btnMessage' => "se connecter"]));
 		}
 		return print_r($this->render("message",['type' => 'danger', 'message' => 'une erreur à eu lieu lors de la validation de l\' adresse mail', 'brnReturn' => '\\', 'btnMessage' => "retour à l'acceuil"]));
+	}
+	public function logout()
+	{
+		(new requestManager)->killSession();
+		return header('Location:/');
 	}
 }

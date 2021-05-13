@@ -63,10 +63,10 @@ class requestManager
 	}
 	function isSetSession($key)
 	{
-		if(isset($key))
-		{
-			return true;
-		}
-		return false;
+		return array_key_exists($key, $_SESSION);
+	}
+	function killSession()
+	{
+		return session_destroy();
 	}
 }

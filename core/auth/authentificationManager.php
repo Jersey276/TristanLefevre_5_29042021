@@ -35,7 +35,7 @@ class authentificationManager
 		$query = new SelectQuery('select');
 		$statement = $query->select('user.pseudo','user.email','user.password','role.nameRole as role','user.isEmailChecked')->from('user')->leftjoin('role','role.idRole = user.idRole')->where("pseudo = '".$login."'")->toString();
 		$account = $this->database->prepare($statement, null,"select", "user", true);
-		if ( $login == $account['pseudo'] && password_verify($password, $account['password']))
+		if ($account != false && password_verify($password, $account['password']))
 		{
 			if($account['isEmailChecked'] == true) 
 			{
