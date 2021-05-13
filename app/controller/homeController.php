@@ -35,8 +35,7 @@ class homeController extends AbstractController{
         ]);
         if ($formData != false) 
         {
-            $mail = new MailManager();
-            $mail->sendMail('tristan-lefevre@hotmail.fr', "contact de ". $formData['name'], $formData['name']. '('. $formData['email'] . ') vous demande : /r/n'. $formData['message']);
+            MailManager::sendMail('tristan-lefevre@hotmail.fr', "contact de ". $formData['name'], $formData['name']. '('. $formData['email'] . ') vous demande : /r/n'. $formData['message']);
             $message = array("type" => "success", "message" => "votre message a bien été envoyé");
         } else
         {

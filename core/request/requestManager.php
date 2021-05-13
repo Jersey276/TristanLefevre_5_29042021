@@ -48,9 +48,8 @@ class requestManager
 				}
 				return false;
 				break;
-			//clean string of all unusual characters and injection try
 			case "string" :
-				return htmlentities($data);
+				return htmlentities($data, ENT_QUOTES);
 				break;
 		}
 	}
@@ -64,10 +63,10 @@ class requestManager
 	}
 	function isSetSession($key)
 	{
-		if(isset($key))
-		{
-			return true;
-		}
-		return false;
+		return array_key_exists($key, $_SESSION);
+	}
+	function killSession()
+	{
+		return session_destroy();
 	}
 }
