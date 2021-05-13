@@ -4,6 +4,8 @@ namespace app;
 
 use AltoRouter;
 use app\controller\homeController;
+use app\controller\authController;
+use core\auth\roleChecker;
 
 class Router {
 
@@ -27,16 +29,33 @@ class Router {
 
         public function run() {
             $match = $this->router->match();
-            if ($match != false){
-            switch ($match['target']['c']) {
-                case ('homeController') :
-                    $controller = new homeController();
-                    break;
-            };
-            call_user_func_array(array($controller,$match['target']['a']), array());
-            return $this;
+            if ($match != false)
+            {
+                if ($match['target']['ur'] != null)
+                {
+                    if ($match['target']['ur'] != "Guest")
+                    {
+                        if (!roleChecker::role($match['target']['ur']))
+                        {
+                        return header( filter_input(INPUT_SERVER, "SERVER_PROTOCOL") . ' 404 Not Found');
+                        }
+                    } elseif ($match['target']['ur'] == "Guest" && !roleChecker::guest())
+                    {
+                        return header( filter_input(INPUT_SERVER, "SERVER_PROTOCOL") . ' 404 Not Found');
+                    }
+                }
+                switch ($match['target']['c']) {
+                    case ('homeController') :
+                        $controller = new homeController();
+                        break;
+                    case ('authController') :
+                        $controller = new authController();
+                        break;
+                };
+                call_user_func_array(array($controller,$match['target']['a']), $match['params']);
+                return $this;
             }
-            header( filter_input(INPUT_SERVER, "SERVER_PROTOCOL") . ' 404 Not Found');
+            return header( filter_input(INPUT_SERVER, "SERVER_PROTOCOL") . ' 404 Not Found');
         }
     }
 ?>

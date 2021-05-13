@@ -1,11 +1,15 @@
 <?php
 
-use app\util\database\DatabaseManager;
 
+namespace app;
 class App {
-
-    static function load() {
-        session_start();
+    
+    static function load()
+    {
+        if(session_id() == '')
+        {
+            session_start();
+        }
         require '../vendor/autoload.php';
     }
 }
