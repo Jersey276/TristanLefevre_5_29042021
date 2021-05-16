@@ -43,10 +43,14 @@ class SelectQuery
 
     public function toString()
     {
-        return 'SELECT '. implode(', ', $this->fields)
-            . ' FROM ' . implode(', ', $this->from) 
-            . implode('', $this->join) 
-            . ' WHERE ' . implode(' AND ', $this->conditions);
+        $message =  'SELECT '. implode(', ', $this->fields)
+            . ' FROM ' . implode(', ', $this->from) . implode('', $this->join);
+            if (isset($this->conditions))
+            {
+                $message = $message . ' WHERE ' . implode(' AND ', $this->conditions);
+            }
+            return $message;
+
 
     }
 }

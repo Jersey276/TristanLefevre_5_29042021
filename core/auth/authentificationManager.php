@@ -8,19 +8,31 @@ use core\database\SelectQuery;
 use core\database\UpdateQuery;
 use core\database\DeleteQuery;
 use core\database\DatabaseManager;
-use core\request\requestManager;
-use \SessionHandler;
+use core\request\RequestManager;
 
-class authentificationManager
+/**
+ * class for manage authentification system
+ */
+class AuthentificationManager
 {
+	/**
+	 * instance of this class (Singleton)
+	 */
 	private static $instance;
+	/**
+	 * used database
+	 */
 	private $database;
-	
+
 	private function __construct(databaseManager $database)
 	{
 		$this->database = $database;
 	}
 	
+	/**
+	 * 
+	 * @param 
+	 */
 	public static function getInstance($database = null)
 	{
 		if(empty(self::$instance))
@@ -30,11 +42,21 @@ class authentificationManager
 		return self::$instance;
 	}
 
+	/**
+	 * get user and fill session var with 
+	 * @param string login
+	 * @param string password
+	 */
 	public function login($login, $password) 
 	{
 		$query = new SelectQuery('select');
-		$statement = $query->select('user.pseudo','user.email','user.password','role.nameRole as role','user.isEmailChecked')->from('user')->leftjoin('role','role.idRole = user.idRole')->where("pseudo = '".$login."'")->toString();
-		$account = $this->database->prepare($statement, null,"select", "user", true);
+		$statement = $query
+			->select('user.pseudo','user.email','user.password','role.nameRole as role','user.isEmailChecked')
+			->from('user')
+			->leftjoin('role','role.idRole = user.idRole')
+			->where("pseudo = '".$login."'")
+			->toString();
+		$account = $this->database->prepare($statement,"select", "\app\model\User", true);
 		if ($account != false && password_verify($password, $account['password']))
 		{
 			if($account['isEmailChecked'] == true) 
@@ -50,22 +72,35 @@ class authentificationManager
 		return [ 'isConnected' => false, 'message' => 'identifiant / mot de passe incorrect, veuiller ressayer'];
     }
 
+	/**
+	 * insert new user into database
+	 * @param string pseudo of new user
+	 * @param string verified password of new user
+	 * @param string email of new user
+	 * @return mixed result of database request
+	 */
 	public function register($pseudo, $password, $email)
 	{
 		$password =  password_hash($password, PASSWORD_BCRYPT);
 		$query = new InsertQuery();
-		$awnser = $this->database->prepare($query->insertInto('user')->key('pseudo', 'password', 'email')->value($pseudo,$password,$email)->toString(), null,'insert', true, true);
+		$awnser = $this->database->prepare($query->insertInto('user')->key('pseudo', 'password', 'email')->value($pseudo,$password,$email)->toString(),'insert');
 		return $awnser;
 	}
 
+	/**
+	 * Create and generate a new token
+	 * @param string type of token
+	 * @param string argument to use depending of type (email for password type, idUser for email validation)
+	 * @return string token on success
+	 * @return false fail
+	 */
 	public function askToken($type, $arg)
 	{
 		switch($type)
 		{
 			case 'password' :
-				// Search account concerned with this email
 				$statementSearch = (new SelectQuery())->select('*')->from('user')->where("email = '". $arg."'")->toString();
-				$account = $this->database->prepare($statementSearch, null,"select", "user", true);
+				$account = $this->database->prepare($statementSearch,"select", "app\model\user", true);
 				if ($account != false) {
 					$token = tokenGenerator::strRandom();
 					$idUser = $account['idUser'];
@@ -80,30 +115,36 @@ class authentificationManager
 				$type = 2;
 				break;
 		}
-		$statement = (new InsertQuery())->insertInto('token')->key('idUser','token','idTokenType')->value($idUser,$token,2)->toString();
+		$statement = (new InsertQuery())->insertInto('token')->key('idUser','token','idTokenCategory')->value($idUser,$token,2)->toString();
 		if($this->database->prepare($statement,null,"insert",null,true))
 		{
 			return ($token);
 		}
 		return false;
 	}
-
+	/**
+	 * Use token and change user data depending of function
+	 * @param token token
+	 * @param function type of functions
+	 * @param password (to be used only when ou need to change password)
+	 * @return bool result of operation
+	 */
 	public function useToken($token, $function, $password = null)
 	{
 		switch($function)
 		{
-			case 'changePassword':
+			case 'password':
 				$set = "password = '" . password_hash($password, PASSWORD_BCRYPT) . "'";
 				break;
-			case 'validEmail' :
+			case 'email' :
 				$set = "isEmailChecked = true";
 				break;
 		}
 		$statement = (new UpdateQuery())->update("user")->set($set)->where("idUser =" . $token['idUser'])->toString();
-		if ($this->database->prepare($statement, null, "update", null)) {
-			$this->database->prepare((new DeleteQuery())->delete('token')->where("idToken = ". $token['idToken'])->toString(),null,"delete",null,true);
+		if ($this->database->prepare($statement, "update")) {
+			$this->database->prepare((new DeleteQuery())->delete('token')->where("idToken = ". $token['idToken'])->toString(),"delete");
 			return true;
 		}
-
+		return false;
 	}
 }
