@@ -33,6 +33,7 @@
 						<p><a href="/forgotPassword"> Mot de passe oublié ?</a></p>
 					</div>
 					<div class="">
+						<input type="hidden" name="CSRFtoken" value="{{ CSRFtoken }}">
 						<p class="pb-0">Pas encore inscrit ? <a href="/register">Inscris-toi</a></p>
 						<button type="submit" class ="btn btn-primary">Se connecter</button>
 					</div>
