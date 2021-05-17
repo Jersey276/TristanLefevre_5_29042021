@@ -52,7 +52,6 @@ class DatabaseManager{
             switch ($type)
             {
                 case ("select") :
-                    
                     $req->setFetchMode(PDO::FETCH_CLASS, $classname);
                     if ($isOnly)
                     {
