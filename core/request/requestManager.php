@@ -1,7 +1,7 @@
 <?php
 namespace core\request;
 
-class requestManager
+class RequestManager
 {
 	/**
 	 * get all post variable
@@ -24,7 +24,8 @@ class requestManager
 					break;
 				}
 				$tempPost = $this->checkAndPreparePost($posts[$postKey],$condition);
-				if (!$tempPost) {
+				if (!$tempPost)
+				{
 					return false;
 				}
 			}
