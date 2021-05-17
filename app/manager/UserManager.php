@@ -143,7 +143,6 @@ class UserManager
 		{
 			$query = new AuthQuery();
 			$token = (App::getDB())->prepare($query->getTokenQuery($keyToken),"select","app\model\token",true);
-			$password = $this->hashPassword($post['password']);
 			if ($this->auth->useToken($token, "password"))
 			{
 			return [
