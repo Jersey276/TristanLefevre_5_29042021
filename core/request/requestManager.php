@@ -128,7 +128,7 @@ class RequestManager
 		}
 			else
 		{
-			$ipAddr=$_SERVER['REMOTE_ADDR'];
+			$ipAddr= filter_input(INPUT_SERVER,'REMOTE_ADDR');
 		}
 		return $ipAddr;
 		}
