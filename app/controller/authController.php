@@ -4,142 +4,138 @@ namespace app\controller;
 
 use core\controller\AbstractController;
 use core\request\requestManager;
-use core\auth\authentificationManager;
-use core\mail\mailManager;
-use core\database\databaseManager;
-use core\database\selectQuery;
-use app\app;
 
-class authController extends AbstractController{
+use app\manager\UserManager;
+
+/**
+ * Controller of Authentification System
+ * @author Tristan
+ * @version 2
+ */
+class AuthController extends AbstractController
+{
+	/**
+	 * Show register form
+	 * @return Twigtemplate template of register Form with generated CSRF Token
+	 */
 	public function registerForm()
 	{
-		print_r($this->render('auth/registerForm'));
+		return print_r($this->render('auth/registerForm',[
+			'CSRFtoken' => (new UserManager())->getCSRFToken()]));
 	}
+
+	/**
+	 * register new user
+	 * @return Twigtemplate template of Message template with message for confirm succes of operation
+	 * @return Twigtemplate template of register Form with error message and new CSRF Token in case of fail
+	 */
 	public function register()
 	{
-		$post = (new requestManager())->getPost([
-			'pseudo' => 'string',
-			'email' => 'string|email',
-			'password' => 'string',
-			'confirm-password' => 'string' 
-		]);
-		if ($post == false)
-		{
-			return print_r($this->render('auth/registerForm', [ 
-				'pseudo' => $post['pseudo'], 
-				'email' => $post['email'], 
-				'message' => "un problème a eu lieu avec vos données, veuiller ressayer"
-				]));
-		}
-		if ($post['password'] != $post['confirm-password'])
-		{
-			return print_r($this->render('auth/registerForm', [ 
-				'pseudo' => $post['pseudo'], 
-				'email' => $post['email'], 
-				'message' => "le mot de passe et sa confirmation ne sont pas identiques"
-				]));
-		}
-		$database = new databaseManager();
-		$auth = authentificationManager::getInstance($database);
-		$awnser = $auth->register($post["pseudo"], $post["password"], $post["email"]);
-		
-		if ($awnser != false)
-		{
-			$user = $database->prepare((new SelectQuery())->select('idUser')->from('user')->where("user.pseudo = '".$post['pseudo']."'")->toString(),null,"select","user",true);
-			$token = $auth->askToken("email",$user['idUser']);
-			if ($token != false)
-			{
-				mailManager::sendmail($post['email'],"nouveau mot de passe","bienvenue sur "  . filter_input(INPUT_SERVER, 'SERVER_NAME') .". /r/n voici un lien pour valider votre email : <a href='" . filter_input(INPUT_SERVER, 'SERVER_NAME') .'/login/'. $token . "'>changer mon mot de passe<a>");
-			}
-			return print_r($this->render("message", ['type' => 'success', 'message' => 'un message à été envoyé pour valider votre adresse mail.', 'btnReturn' => '\login', 'btnMessage' => "se connecter"]));
-		}
 
+		$response = (new UserManager())->register();
+		if ($response['result'])
+		{
+			return print_r($this->render("message", $response['messageVar']));
+		}
+		return print_r($this->render('auth/registerForm', $response['errVar']));
 	}
+
+	/**
+	 * Show Login form
+	 * @return Twigtemplate template of Login Form with generated CSRF Token
+	 */
 	public function loginForm()
 	{
-		return print_r($this->render('auth/loginForm'));
+		return print_r($this->render('auth/loginForm',['CSRFtoken' => (new UserManager())->getCSRFToken()]));
 	}
+
+	/**
+	 * Ask manager to log in user and show result 
+	 * @return header redirection to homePage
+	 * @return Twigtemplate template of login Form with error message and new CSRF Token in case of fail
+	 */
 	public function login()
 	{
-		$post = (new requestManager())->getPost([
-			"pseudo" => "string",
-			"password" => "string"
-		]);
-		if($post == false)
+		$response = (new UserManager())->login();
+		if ($response['result'])
 		{
-			return print_r($this->render('auth/loginForm', ['message' => [ "type" => "danger", "text" => "un problème a eu lieu avec vos données, veuiller ressayer"]]));
-		}
-		$auth = authentificationManager::getInstance(new databaseManager());
-		$awnser = $auth->login($post["pseudo"], $post["password"]);
-		if($awnser['isConnected']) {
 			return header('Location:' . "/");	
 		}
-		return print_r($this->render("auth/loginForm",['message' => ['type' => 'danger', 'text' => $awnser['message']]]));
+		return print_r($this->render("auth/loginForm", $response['errVar']));
 	}
+
+	/**
+	 * Show form when user click on 'forgot Password' link
+	 * @return Twigtemplate template of Forget Form with generated CSRF Token
+	 */
 	public function forgotPasswordForm()
 	{
-		return print_r($this->render('auth/forgotPasswordForm'));
+		return print_r($this->render('auth/forgotPasswordForm', ['CSRFtoken' => (new UserManager())->getCSRFToken() ]));
 	}
+
+	/**
+	 * ask manager to send mail and show result
+	 * @return Twigtemplate message page that report to user that a mail with link is send 
+	 * @return Twigtemplate template of forgotPassword Form with error message and new CSRF Token in case of fail
+	 */
 	public function forgotPassword()
 	{
-		$post = (new requestManager())->getPost([
-			'email' => 'string|email'
-		]);
-		$auth = authentificationManager::getInstance(new databaseManager());
-		if($post == false)
+		$response = (new UserManager())->forgotPassword();
+		if ($response['result'])
 		{
-			return print_r($this->render("auth/forgotPasswordForm",['message' => 'un problème a eu lieu avec vos données, veuiller ressayer']));
+			return print_r($this->render("message", $response['messageVar']));
 		}
-		$token = $auth->askToken("password",$post['email']);
-		if ($token != false)
-		{
-			mailManager::sendmail($post['email'],"nouveau mot de passe","Vous avez demandé de changer le mot de passe, voici un lien pour le faire : <a href='" . filter_input(INPUT_SERVER, 'SERVER_NAME').'/forgotPassword/'. $token . "'>changer mon mot de passe<a>");
-		}
-		return print_r($this->render("message", ['type' => 'warning', 'message' => 'un message à été envoyé pour changer votre mot de passe.', 'btnReturn' => '\login', 'btnMessage' => "se connecter"]));
+		return print_r($this->render("auth/forgotPasswordForm", $response['errVar']));
 	}
+
+	/**
+	 * ask manager validity of token and show changepassword Form if success
+	 * @param string token
+	 * @return TwigTemplate template of ChangePassword Form if token is valid
+	 * @return header Throw 404 error when token isn't valid
+	 */
 	public function changePasswordForm($token)
 	{
-		$database = new databaseManager();
-		$token = $database->prepare((new SelectQuery())->select('*')->from('token')->where("token = '" . $token . "'")->toString(), null,"select","token",true);
-		if ($token != false)
+		$response = (new UserManager())->changePasswordForm($token);
+		if ($response['result'])
 		{
-			return print_r($this->render('auth/changePasswordForm',['token' => $token['token']]));
+			return print_r($this->render('auth/changePasswordForm', $response['var']));
 		}
 		return header( filter_input(INPUT_SERVER, "SERVER_PROTOCOL") . ' 404 Not Found');
 	}
+
+	/**
+	 * Ask manager to change password. Send response depending of success
+	 * @param string token
+	 * @return TwigTemplate message when success
+	 * @return TwigTemplate changePasswordForm with new CSRF Token when fail
+	 */
 	public function changePassword($token)
 	{
-		$database = new databaseManager();
-		$auth = authentificationManager::getInstance($database);
-		$post = (new requestManager($database))->getPost([
-			'password' => 'string',
-			'confirm-password' => 'string' 
-		]);
-		if ($post['password'] != $post['confirm-password']) {
-			return print_r($this->render('auth/registerForm', [ 
-				'pseudo' => $post['pseudo'], 
-				'email' => $post['email'], 
-				'message' => "le mot de passe et sa confirmation ne sont pas identiques"
-				]));
-		}
-		$token = $database->prepare((new SelectQuery())->select('*')->from('token')->where("token = '" . $token . "'")->toString(), null,"select","token",true);
-		if ($auth->useToken($token, "changePassword", $post['password']))
+		$response = (new UserManager())->changePassword($token);
+		if ($response['result'])
 		{
-			return print_r($this->render("message", ['type' => 'success', 'message' => 'Le mot de passe à été mis à jour', 'btnReturn' => '\login', 'btnMessage' => "se connecter"]));
+			return print_r($this->render("message", $response['messageVar']));
 		}
-		return print_r($this->render("message",['type' => 'danger', 'message' => 'une erreur à eu lieu lors de la modification dumot de passe']));
+		return print_r($this->render("auth/changePasswordForm", $response['errVar']));
+
 	}
+
+	/**
+	 * Valid email of user when he click on link on sended mail
+	 * @param string token the user received on mail
+	 * @return TwigTemplate message with result of request
+	 */
 	public function validEmail($token)
 	{
-		$database = new databaseManager();
-		$auth = authentificationManager::getInstance($database);
-		$token = $database->prepare((new SelectQuery())->select('*')->from('token')->where("token = '" . $token . "'")->toString(), null,"select","token",true);
-		if ($auth->useToken($token, "validEmail"))
-		{
-			return print_r($this->render("message", ['type' => 'success', 'message' => 'Votre adresse mail a été vérifié, vous pouvez vous connecter', 'btnReturn' => '\login', 'btnMessage' => "se connecter"]));
-		}
-		return print_r($this->render("message",['type' => 'danger', 'message' => 'une erreur à eu lieu lors de la validation de l\' adresse mail', 'brnReturn' => '\\', 'btnMessage' => "retour à l'acceuil"]));
+		$response = (new UserManager())->validEmail($token);
+		return print_r($this->render("message", $response));
 	}
+
+	/**
+	 * Log out user
+	 * @return header Redirect to homePage()
+	 */
 	public function logout()
 	{
 		(new requestManager)->killSession();
