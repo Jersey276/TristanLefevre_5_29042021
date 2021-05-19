@@ -79,15 +79,7 @@ class AuthentificationManager
 	 */
 	public function login($login, $password) 
 	{
-		$query = new SelectQuery('select');
-		$statement = $query
-			->select('user.pseudo','user.email','user.password','role.nameRole as role','user.isEmailChecked')
-			->from('user')
-			->leftjoin('role','role.idRole = user.idRole')
-			->where("pseudo = '".$login."'")
-			->toString();
-		$account = $this->database->prepare($statement,"select", "\app\model\User", true);
-		if ($account != false && password_verify($password, $account['password']))
+		if($this->checkTry())
 		{
 			$query = new SelectQuery('select');
 			$statement = $query
@@ -114,7 +106,7 @@ class AuthentificationManager
 			return ["isConnected" => false, "message" => "identifiant / mot de passe incorrect, veuiller ressayer"];
 		}
 		return ["isConnected" => false, "message" => "vous avez fais trop d' essai, veuiller attendre 1 minute avant de recommencer"];
-    }
+	}
 
 	/**
 	 * insert new user into database
