@@ -3,15 +3,29 @@
 namespace app\controller;
 
 use core\controller\AbstractController;
-use core\mail\mailManager as MailManager;
+use app\service\mail\ContactMail;
 use core\request\requestManager as RequestManager;
 
-class homeController extends AbstractController{
+/**
+ * Controller of home page, contact form and admin home page
+ * @author Tristan
+ * @version 2
+ */
+class HomeController extends AbstractController
+{
+    /**
+     * Show homepage
+     * @return TwigTemplate home page
+     */
     function home() {
         return print_r($this->render("home"));
     }
-
-    function showCV() {
+    
+    /**
+     * Display cv
+     */
+    function showCV()
+    {
         // Store the file name into variable
         $file = 'CV.pdf';
         $filename = 'CV.pdf';
@@ -25,6 +39,10 @@ class homeController extends AbstractController{
         @readfile($file);
     }
 
+    /**
+     * send message to admin
+     * @return json message of confirmation
+     */
     function sendmail()
     {
         $request = new RequestManager();
@@ -35,7 +53,7 @@ class homeController extends AbstractController{
         ]);
         if ($formData != false) 
         {
-            MailManager::sendMail('tristan-lefevre@hotmail.fr', "contact de ". $formData['name'], $formData['name']. '('. $formData['email'] . ') vous demande : /r/n'. $formData['message']);
+            (new ContactMail())->contactMail($formData);
             $message = array("type" => "success", "message" => "votre message a bien été envoyé");
         } else
         {
@@ -43,4 +61,14 @@ class homeController extends AbstractController{
         }
         return print_r(json_encode($message));
     }
+    
+    /**
+     * Access to Admin home page
+     * @return TwigTemplate admin page with 
+     */
+    function adminHome()
+    {
+        return print_r($this->render('admin/adminHome',['active1' => 'active']));
+    }
+    
 }
