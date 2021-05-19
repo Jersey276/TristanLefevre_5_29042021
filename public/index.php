@@ -22,7 +22,15 @@ $router
     ->post('/forgotPassword/[a:token]','AuthController','changePassword','Guest')
     ->get('/login/[a:token]','AuthController','validEmail','Guest')
     ->get('/logout','AuthController','logout','User')
+    
+    ->get('/post','PostController','listPosts')
+    ->get('/post/[i:id]','PostController',"getPost")
 
     ->get('/admin','HomeController','adminHome','Writer')
-    
+    ->get('/admin/post','PostController','listPostsAdmin','Writer')
+    ->get('/admin/post/add','PostController','addPost','Writer')
+    ->post('/admin/post/add','PostController','postPost','Writer')
+    ->get('/admin/post/[i:id]','PostController','ModifyPost','Writer')
+    ->post('/admin/post/[i:id]','PostController','alterPostPost','Writer')
+    ->post('/admin/post/remove/[i:id]','PostController','removePost','Writer')   
     ->run();

@@ -54,7 +54,7 @@ class Router {
                         $controller = new AuthController();
                         break;
                     case ('PostController') :
-                        $controller = new PostController();
+                        $controller = new PostController();
                         break;
                 };
                 call_user_func_array(array($controller,$match['target']['a']), $match['params']);

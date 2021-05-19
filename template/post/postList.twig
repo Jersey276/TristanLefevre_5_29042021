@@ -1,0 +1,16 @@
+{% extends "/base.twig" %}
+{% block header %}{% endblock %}
+{% block footer %}{% endblock %}
+{% block title %}Articles{% endblock %}
+{% block content %}
+<div class="container">
+	<div class="list-group">
+		{% for article in articles %}
+			<a href="{{ article.getUrl() }}" class="list-group-item list-group-item-action">
+				<h3> {{ article.gettitlePost() }}</h3>
+				<p> {{ article.getchapoPost() }}</p>
+			</a>
+		{% endfor %}
+	</div> 
+</div>
+{% endblock %}
