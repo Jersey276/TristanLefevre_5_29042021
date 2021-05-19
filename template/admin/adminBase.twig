@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+    <head>
+        <meta charset="utf-8"/>
+        <title>{% block title %}{% endblock %} - Tristan Lefèvre</title>
+        {% block stylesheet %}
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.0/font/bootstrap-icons.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+		<link rel="stylesheet" href="/css/bootstrap-footer.css">
+        {% endblock %}
+        {% block script %}
+		<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        {% endblock %}
+    </head>
+    <body>
+        <header class="container-fluid pl-0 pr-0">
+			<div class="d-flex flex-column">
+				<nav class="navbar navbar-dark bg-dark">
+				<h2 class="text-white">Interface Admin </h2>
+				</nav>
+				<ul class="nav nav-tabs nav-fill">
+					<li class="nav-item">
+						<a class="nav-link {{ active1 }}" href="#">Acceuil Admin</a>
+					</li>
+					<li class="nav-item dropdown">
+						<a class="nav-link {{ active2 }} dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Article</a>
+						<div class="dropdown-menu">
+							<a class="dropdown-item" href="/admin/post">Consulter ses articles</a>
+							<div class="dropdown-divider"></div>
+							<a class="dropdown-item" href="/admin/post/add">Créer un nouvel article</a>
+						</div>
+					</li>
+					{% if auth("Admin") %}
+					<li class="nav-item">
+						<a class="nav-link {{ active3 }}" href="#">Profils utilisateurs</a>
+					</li>
+					{% else %}
+					<li class="nav-item">
+						<a class="nav-link disabled">Profils utilisateurs</a>
+					</li>
+					{% endif %}
+					<li class="nav-item">
+						<a class="nav-link" href="/">Retour sur le site</a>
+					</li>
+				</ul>
+			</div>
+        </header>
+        <!-- Page Content-->
+        <main>
+        {% block content %}{% endblock %}
+        </main>
+    </body>
+</html>
