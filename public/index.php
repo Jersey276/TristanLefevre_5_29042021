@@ -7,19 +7,22 @@ use app\Router;
 
 $router = new Router();
 $router
-    ->get('/', 'homeController', 'home')
-    ->get('/cv','homeController', 'showCV')
-    ->post('/contact','homeController', 'sendMail')
-    ->get('/test/[i:id]','homeController','test')
+    ->get('/', 'HomeController', 'home')
+    ->get('/cv','HomeController', 'showCV')
+    ->post('/contact','HomeController', 'sendMail')
+    ->get('/test/[i:id]','TestController','test')
 
-    ->get('/register','authController','registerForm','Guest')
-    ->post('/register','authController','register','Guest')
-    ->get('/login','authController','loginForm','Guest')
-    ->post('/login','authController','login','Guest')
-    ->get('/forgotPassword','authController','forgotPasswordForm','Guest')
-    ->post('/forgotPassword','authController','forgotPassword','Guest')
-    ->get('/forgotPassword/[a:token]','authController','changePasswordForm','Guest')
-    ->post('/forgotPassword/[a:token]','authController','changePassword','Guest')
-    ->get('/login/[a:token]','authController','validEmail','Guest')
-    ->get('/logout','authController','logout','User')
+    ->get('/register','AuthController','registerForm','Guest')
+    ->post('/register','AuthController','register','Guest')
+    ->get('/login','AuthController','loginForm','Guest')
+    ->post('/login','AuthController','login','Guest')
+    ->get('/forgotPassword','AuthController','forgotPasswordForm','Guest')
+    ->post('/forgotPassword','AuthController','forgotPassword','Guest')
+    ->get('/forgotPassword/[a:token]','AuthController','changePasswordForm','Guest')
+    ->post('/forgotPassword/[a:token]','AuthController','changePassword','Guest')
+    ->get('/login/[a:token]','AuthController','validEmail','Guest')
+    ->get('/logout','AuthController','logout','User')
+
+    ->get('/admin','HomeController','adminHome','Writer')
+    
     ->run();

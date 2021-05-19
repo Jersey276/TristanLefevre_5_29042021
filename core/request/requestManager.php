@@ -57,6 +57,12 @@ class RequestManager
 				break;
 		}
 	}
+	/**
+	 * get/set Session Variable
+	 * @param string session variable name
+	 * @param mixed value to use on this session variable
+	 * @return mixed session variable
+	 */
 	function Session($key, $val = null)
 	{
 		if (isset($val))
@@ -65,27 +71,66 @@ class RequestManager
 		}
 		return filter_var($_SESSION[$key]);
 	}
+	/**
+	 * Verify if this session variable exist
+	 * @return bool result of array key exists
+	 */
 	function isSetSession($key)
 	{
 		return array_key_exists($key, $_SESSION);
 	}
+	/**
+	 * kill session
+	 * @return bool result of session destroy
+	 */
 	function killSession()
 	{
 		return session_destroy();
 	}
+	/**
+	 * Generate and assign new CSRF Token
+	 * @return string token
+	 */
 	function newCSRFToken()
 	{
 		$token = uniqid(rand(), true);
-		$this->Session('token', $token);
-		$this->Session('token_time', time());
+		$this->session('token', $token);
+		$this->session('token_time', time());
 		return $token;
 	}
+	/**
+	 * Verify CSRF Token
+	 * @param string csrf token
+	 * @param int time for validity
+	 * @return bool check if CSRF token is set, valid and match to 
+	 */
 	function checkCSRFToken($postToken, $time)
 	{
-		if($this->Session('token') != null && $this->Session('token_time') != null && isset($postToken))
-			if($this->Session('token') == $postToken)
-				if($this->Session('token_time') >= (time() - $time))
+		if($this->session('token') != null && $this->session('token_time') != null && isset($postToken))
+			if($this->session('token') == $postToken)
+				if($this->session('token_time') >= (time() - $time))
 					return true;
 		return false;
 	}
+
+	/**
+	 * Get user Ip Address
+	 * @return string ip adress of user
+	 */
+	function getIpAddr(){
+		if (!empty(filter_input(INPUT_SERVER,'HTTP_CLIENT_IP')))
+		{
+			$ipAddr=filter_input(INPUT_SERVER,'HTTP_CLIENT_IP');
+		}
+			elseif (!empty(filter_input(INPUT_SERVER,'HTTP_X_FORWARDED_FOR')))
+		{
+			$ipAddr=filter_input(INPUT_SERVER,'HTTP_X_FORWARDED_FOR');
+		}
+			else
+		{
+			$ipAddr= filter_input(INPUT_SERVER,'REMOTE_ADDR');
+		}
+		return $ipAddr;
+		}
+
 }
