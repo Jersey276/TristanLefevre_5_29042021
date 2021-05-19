@@ -132,4 +132,5 @@ class RequestManager
 		}
 		return $ipAddr;
 		}
+
 }

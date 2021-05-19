@@ -76,11 +76,18 @@ class AuthentificationManager
 	 * get user and fill session var with 
 	 * @param string login
 	 * @param string password
-	 * @return array result with message in case of connection fail
 	 */
 	public function login($login, $password) 
 	{
-		if ($this->checkTry())
+		$query = new SelectQuery('select');
+		$statement = $query
+			->select('user.pseudo','user.email','user.password','role.nameRole as role','user.isEmailChecked')
+			->from('user')
+			->leftjoin('role','role.idRole = user.idRole')
+			->where("pseudo = '".$login."'")
+			->toString();
+		$account = $this->database->prepare($statement,"select", "\app\model\User", true);
+		if ($account != false && password_verify($password, $account['password']))
 		{
 			$query = new SelectQuery('select');
 			$statement = $query
