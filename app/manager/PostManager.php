@@ -19,31 +19,37 @@ use app\model\Post;
  */
 class PostManager
 {
-	private $query;
+    private $query;
+    private $request;
 
-	function __construct()
-	{
-		$this->query = new PostQuery();
-	}
-	/**
-	 * Collect all post from database and get 
-	 * @return array list of Post objects
-	 */
-	function listPosts()
-	{
-		return (App::getDB())->prepare($this->query->getAllArticles(),"select","app\model\Post");
-	}
-	/**
-	 * Get post by id
-	 * @param int id of post
-	 * @return Post 
-	 */
-	function getPost($id)
-	{
+    public function __construct()
+    {
+        $this->query = new PostQuery();
+        $this->request = new RequestManager();
+    }
+    /**
+     * Collect all post from database
+     * @return array list of Post objects
+     */
+    public function listPosts()
+    {
+        return (App::getDB())->prepare($this->query->getAllArticles(), "select", "app\model\Post");
+    }
+
+    /**
+     * Get post by id
+     * @param int id of post
+     * @param bool ask for CSRFtoken
+     * @return Post article
+     */
+    public function getPost($id, $editor = false)
+    {
+        $postStatement = ((App::getDB())->prepare($this->query->getArticle(),[':id' => $id], "select", "app\model\Post", true));
+        $post = (new Post())->hydrate($postStatement);
+        $var = ['post' => $post];
 		$article = new Post();
 		((App::getDB())->prepare($this->query->getArticle($id),"select","app\model\Post", true)
 			);
 		return $article;
 	}
 }
-?>

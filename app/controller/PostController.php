@@ -13,34 +13,34 @@ use core\controller\AbstractController;
  */
 class PostController extends AbstractController
 {
-	/**
-	 * List all Article
-	 * @return template listArticle.twig with reduced information about article
-	 */
-	function listPosts()
-	{
-		return print_r(
-			$this->render(
-				'post/postList',
-				['articles' => (new PostManager())->listPosts()]
-			)
-		);
-	}
+    /**
+     * List all Article
+     * @return template listArticle.twig with reduced information about article
+     */
+    public function listPosts()
+    {
+        return print_r(
+            $this->render(
+                'post/postList',
+                ['posts' => (new PostManager())->listPosts()]
+            )
+        );
+    }
 
-	/**
-	 * Get one article
-	 * @param int article id
-	 * @return template article.twig with detailled information about article
-	 */
-	function getPost($id)
-	{
-		return print_r(
-			$this->render(
-			'post/postDetail',
-			['article' => (new PostManager())->getPost($id)]
-			)
-		);
-	}
+    /**
+     * Get one article
+     * @param int article id
+     * @return template article.twig with detailled information about article
+     */
+    public function getPost($id)
+    {
+        return print_r(
+            $this->render(
+                'post/postDetail',
+                (new PostManager())->getPost($id)
+            )
+        );
+    }
 
 	/**
 	 * Create new article
