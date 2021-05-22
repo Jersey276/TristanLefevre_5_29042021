@@ -34,12 +34,16 @@ class PostController extends AbstractController
      */
     public function getPost($id)
     {
-        return print_r(
-            $this->render(
-                'post/postDetail',
-                (new PostManager())->getPost($id)
-            )
-        );
+        $post = (new PostManager())->getPost($id);
+        if ($post['result']) {
+            return print_r(
+                $this->render(
+                    'post/postDetail',
+                    $post['var']
+                )
+            );
+        }
+        return $this->error404();
     }
 
     /**
@@ -91,15 +95,18 @@ class PostController extends AbstractController
     public function modifyPostForm($id)
     {
         $post = (new PostManager())->getPost($id, true);
-        if ($post != false) {
+        if ($post['result']) {
             return print_r(
                 $this->render(
                     'admin/post/adminPostForm',
-                    $post
+                    $post['var']
                 )
             );
         }
-        return $this->error403(true);
+        if ($post['code'] == 403) {
+            return $this->error403(true);
+        }
+        return $this->error404();
     }
 
     /**
