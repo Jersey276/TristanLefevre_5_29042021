@@ -15,5 +15,6 @@ abstract class AbstractModel
 				$this->$method($data);
 			}
 		}
+		return $this;
 	}
 }
