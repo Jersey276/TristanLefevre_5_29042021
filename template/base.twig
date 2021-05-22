@@ -35,7 +35,7 @@
                                     {% endif %}
                                     {% if auth('User') %}
                                         <a href="/profil" class="btn btn-success">Profil</a>
-                                        {% if auth('Admin') %}
+                                        {% if auth('Writer') %}
                                             <a href="/admin" class="btn btn-warning">Admin</a>
                                         {% endif %}
                                         <a href="/logout" class="btn btn-danger">Deconnexion</a>

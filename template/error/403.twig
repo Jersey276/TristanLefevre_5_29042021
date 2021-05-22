@@ -1,0 +1,23 @@
+{% extends "base.twig" %}
+
+{% block title %}Interdit
+{% endblock %}
+{% block content %}
+	<style>
+		.centered {
+			position: fixed;
+			top: 50%;
+			left: 50%;
+			/* bring your own prefixes */
+			transform: translate(-50%, -50%);
+		}
+	</style>
+	<div class="container centered">
+		<div class="d-flex flex-column">
+			<h1>
+				Accès interdit
+			</h1>
+			<p>Il semblerais que vous n'etes pas autorisé a accéder a cette page</p>
+		</div>
+	</div>
+{% endblock %}

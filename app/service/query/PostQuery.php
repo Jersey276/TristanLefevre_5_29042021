@@ -38,4 +38,51 @@ class PostQuery
             ->where("post.idPost = :id")
             ->toString();
     }
+
+    public function getMyArticles()
+    {
+        return (new SelectQuery)
+        ->select('post.idPost', 'post.titlePost', 'post.chapoPost', 'post.createdAt', 'user.pseudo as author')
+        ->from('post')
+        ->leftJoin('user', 'user.idUser = post.idUser')
+        ->where("user.pseudo = :pseudo")
+        ->toString();
+    }
+
+    public function getOtherArticles()
+    {
+        return (new SelectQuery)
+        ->select('post.idPost', 'post.titlePost', 'post.chapoPost', 'post.createdAt', 'user.pseudo as author')
+        ->from('post')
+        ->leftJoin('user', 'user.idUser = post.idUser')
+        ->where("user.pseudo != :pseudo")
+        ->toString();
+    }
+    public function newArticle()
+    {
+        return (new InsertQuery)
+        ->insertInto('post')
+        ->key('idUser', 'titlePost', 'chapoPost', 'contentPost')
+        ->value(':idUser',':titlePost', ':chapoPost', ':contentPost')
+        ->toString();
+    }
+    public function modifyArticle()
+    {
+        return (new UpdateQuery)
+        ->update('post')
+        ->set(
+            "titlePost = :titlePost",
+            "chapoPost = :chapoPost",
+            "contentPost = :contentPost"
+        )
+        ->where("idPost = :id")
+        ->toString();
+    }
+    public function removePost()
+    {
+        return (new DeleteQuery)
+            ->delete('post')
+            ->where("idPost = :id")
+            ->toString();
+    }
 }

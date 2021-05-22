@@ -1,0 +1,44 @@
+{% extends "/admin/adminBase.twig" %}
+{% block active2 %}active{% endblock %}
+{% block title %}Admin - {{ pageTitle }}{% endblock %}
+{% block content %}
+<div class="container">
+	<div class="alert alert-{{ type }}">
+		{{ message }}
+	</div>
+	{% if post is defined %}
+	<h1> Modifier un article </h1>
+	<form method='POST' action='{{ post.getEditUrl()}}'>
+		<div class="form-group">
+			<label for="titlePost">Titre de l'article</label>
+			<input class="form-control" type="text" name="titlePost" value="{{ string(post.gettitlePost()) }}">
+		</div>
+		<div class="form-group">
+			<label for="chapoPost">Chapo de l'article</label>
+			<input class="form-control" type="text" name="chapoPost" value="{{ string(post.getchapoPost()) }}">
+		</div>
+		<div class="form-group">
+			<label for="contentPost">Contenu de l'article</label>
+			<textarea class="form-control" name="contentPost" rows="20">{{ string(post.getcontentPost()) }}</textarea>
+		{% else %}
+	<h1> Créer un nouvel article </h1>
+	<form method='POST' action='\admin\post\add'>
+		<div class="form-group">
+			<label for="titlePost">Titre de l'article</label>
+			<input class="form-control" type="text" name="titlePost">
+		</div>
+		<div class="form-group">
+			<label for="chapoPost">Chapo de l'article</label>
+			<input class="form-control" type="text" name="chapoPost">
+		</div>
+		<div class="form-group">
+			<label for="contentPost">Contenu de l'article</label>
+			<textarea class="form-control" rows="20" name="contentPost"></textarea>
+		{% endif %}
+		</div>
+		<input type="hidden" name="nameToken" value='{{ CSRFToken.nameToken }}'>
+		<input type="hidden" name="CSRFtoken" value='{{ CSRFToken.token }}'>
+		<button type="submit" class ="btn btn-primary">Confirmer</button>
+	</form>
+</div>
+{% endblock %}

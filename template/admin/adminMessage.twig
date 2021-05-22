@@ -1,0 +1,26 @@
+{% extends "/admin/adminBase.twig" %}
+{% block title %}Admin{% endblock %}
+{% block content %}
+	<div class="container mt-2">
+		<div class="alert alert-{{ type }}" role="alert"> 
+			{{ message }} <br>
+			{% if link is defined %}
+			<a href="{{link.url}}" target="_blank">{{link.message}}</a>
+			{% endif %}
+			<hr>
+			<div class="d-flex flex-row mt-3">
+				{% if isForm %}
+				<form method="POST" action="{{btn1.link}}">
+					<input type="hidden" name="{{form.key}}" value="{{form.val}}"/>
+					<input type="hidden" name="tokenName" value="{{form.tokenName}}"/>
+					<input type="hidden" name="CSRFtoken" value="{{form.token}}"/>
+					<button type="submit" class="btn btn-{{btn1.type}} mr-2">{{btn1.message}}</button>
+				</form>
+				{% else %}
+				<a href={{btn1.link}} class="btn btn-{{btn1.message}} mr-2">{{btn1.message}}</a>
+				{% endif %}
+				<a href={{ btnReturn.link}} class="btn btn-{{btnReturn.type}} ml-2"> {{btnReturn.message}}</a>
+			</div>
+		</div>
+	</div>
+{% endblock %}

@@ -21,10 +21,10 @@
 				</nav>
 				<ul class="nav nav-tabs nav-fill">
 					<li class="nav-item">
-						<a class="nav-link {{ active1 }}" href="#">Acceuil Admin</a>
+						<a class="nav-link {% block active1 %}{% endblock %}" href="#">Acceuil Admin</a>
 					</li>
 					<li class="nav-item dropdown">
-						<a class="nav-link {{ active2 }} dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Article</a>
+						<a class="nav-link {% block active2 %}{% endblock %} dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Article</a>
 						<div class="dropdown-menu">
 							<a class="dropdown-item" href="/admin/post">Consulter ses articles</a>
 							<div class="dropdown-divider"></div>
@@ -33,7 +33,7 @@
 					</li>
 					{% if auth("Admin") %}
 					<li class="nav-item">
-						<a class="nav-link {{ active3 }}" href="#">Profils utilisateurs</a>
+						<a class="nav-link {% block active3 %}{% endblock %}" href="#">Profils utilisateurs</a>
 					</li>
 					{% else %}
 					<li class="nav-item">
