@@ -88,14 +88,13 @@ class RequestManager
     {
         return array_key_exists($key, $_SESSION);
     }
-	/**
-	 * unset a session var
-	 * @return bool result of unset
-	 */
-	public function unsetSession($varName)
-	{
-		unset($_SESSION[$varName]);
-	}
+    /**
+     * unset a session var
+     */
+    public function unsetSession($varName)
+    {
+        unset($_SESSION[$varName]);
+    }
     /**
      * kill session
      * @return bool result of session destroy

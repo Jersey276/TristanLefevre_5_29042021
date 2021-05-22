@@ -141,7 +141,7 @@ class PostManager
     {
         $post = (new PostCheck())->checkPostForm();
         if (empty($post['err'])) {
-            $result = (App::getDB())->prepare(
+            (App::getDB())->prepare(
                 $this->query->modifyArticle(),
                 [':titlePost' => $post['titlePost'],
                 ':chapoPost' => $post['chapoPost'],
