@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html lang="fr">
     <head>
         <meta charset="utf-8"/>
         <title>{% block title %}{% endblock %} - Tristan Lefèvre</title>
@@ -34,7 +35,7 @@
                                     {% endif %}
                                     {% if auth('User') %}
                                         <a href="/profil" class="btn btn-success">Profil</a>
-                                        {% if auth('Admin') %}
+                                        {% if auth('Writer') %}
                                             <a href="/admin" class="btn btn-warning">Admin</a>
                                         {% endif %}
                                         <a href="/logout" class="btn btn-danger">Deconnexion</a>

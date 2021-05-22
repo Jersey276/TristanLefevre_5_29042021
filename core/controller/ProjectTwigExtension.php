@@ -17,6 +17,9 @@ class ProjectTwigExtension extends \Twig\Extension\AbstractExtension
         }) ,
 		new \Twig\TwigFunction('auth', function ($role) {
             return \core\auth\roleChecker::role($role);
+        }) ,
+        new \Twig\TwigFunction('string', function ($string) {
+            return html_entity_decode($string, ENT_QUOTES);
         })
         ];
 	}

@@ -1,0 +1,22 @@
+{% extends "/base.twig" %}
+{% block header %}{% endblock %}
+{% block footer %}{% endblock %}
+{% block title %}{{ post.gettitlePost()}}{% endblock %}
+{% block content %}
+<div class="container">
+	<div class="card my-3">
+		<div class="card-header">
+			<h1 class="card-title">{{ string(post.gettitlePost()) }}</h1>
+			<div class ="d-flex flex-row justify-content-between">
+			<p> {{string(post.getchapoPost())}}</p>
+			</div>
+		</div>
+		<div class="card-body">
+			<p class="card-text">{{ string(post.getcontentPost()) }}</p>
+		</div>
+		<div class="card-footer">
+		<p class="card-text">ecrit par {{ post.getauthor() }} le {{ post.date() }}
+		</div>
+	</div>
+</div>
+{% endblock %}
