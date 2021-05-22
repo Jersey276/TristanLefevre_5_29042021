@@ -4,7 +4,7 @@ use core\controller\AbstractController;
 
 namespace app\controller;
 
-class ErrorController extends AbstractController;
+class ErrorController extends AbstractController
 {
 	public function error404()
 	{
