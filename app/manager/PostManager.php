@@ -33,7 +33,7 @@ class PostManager
      */
     public function listPosts()
     {
-        return (App::getDB())->prepare($this->query->getAllArticles(), "select", "app\model\Post");
+        return (App::getDB())->prepare($this->query->getAllArticles(), [], "select", "app\model\Post");
     }
 
     /**
@@ -44,12 +44,18 @@ class PostManager
      */
     public function getPost($id, $editor = false)
     {
-        $postStatement = ((App::getDB())->prepare($this->query->getArticle(),[':id' => $id], "select", "app\model\Post", true));
+        $postStatement =
+            (App::getDB())->prepare(
+                $this->query->getArticle(),
+                [':id' => $id],
+                "select",
+                "app\model\Post",
+                true
+            );
         $post = (new Post())->hydrate($postStatement);
         $var = ['post' => $post];
-		$article = new Post();
-		((App::getDB())->prepare($this->query->getArticle($id),"select","app\model\Post", true)
-			);
+        return $var;
+    }
 		return $article;
 	}
 }

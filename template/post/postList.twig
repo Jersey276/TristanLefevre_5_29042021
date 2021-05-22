@@ -6,9 +6,9 @@
 <div class="container">
 	<div class="list-group">
 		{% for post in posts %}
-			<a href="{{ post.getDisplayUrl() }}" class="list-group-item list-group-item-action">
-				<h3> {{ post.gettitlePost() }}</h3>
-				<p> {{ post.getchapoPost() }}</p>
+			<a href="{{ string(post.getDisplayUrl()) }}" class="list-group-item list-group-item-action">
+				<h3> {{ string(post.gettitlePost()) }}</h3>
+				<p> {{ string(post.getchapoPost()) }}</p>
 			</a>
 		{% endfor %}
 	</div> 

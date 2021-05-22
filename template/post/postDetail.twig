@@ -6,13 +6,13 @@
 <div class="container">
 	<div class="card my-3">
 		<div class="card-header">
-			<h1 class="card-title">{{ post.gettitlePost() }}</h1>
+			<h1 class="card-title">{{ string(post.gettitlePost()) }}</h1>
 			<div class ="d-flex flex-row justify-content-between">
-			<p> {{post.getchapoPost()}}</p>
+			<p> {{string(post.getchapoPost())}}</p>
 			</div>
 		</div>
 		<div class="card-body">
-			<p class="card-text">{{ post.getcontentPost() }}</p>
+			<p class="card-text">{{ string(post.getcontentPost()) }}</p>
 		</div>
 		<div class="card-footer">
 		<p class="card-text">ecrit par {{ post.getauthor() }} le {{ post.date() }}
