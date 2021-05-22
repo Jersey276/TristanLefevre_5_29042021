@@ -160,7 +160,7 @@ class PostController extends AbstractController
      */
     public function removePost($id)
     {
-        $response = (new PostManager)->removePost($id);
+       (new PostManager)->removePost($id);
         return header('Location: /admin/post');
     }
 }

@@ -88,6 +88,14 @@ class RequestManager
     {
         return array_key_exists($key, $_SESSION);
     }
+	/**
+	 * unset a session var
+	 * @return bool result of unset
+	 */
+	public function unsetSession($varName)
+	{
+		return unset($_SESSION[$varName]);
+	}
     /**
      * kill session
      * @return bool result of session destroy
@@ -152,7 +160,7 @@ class RequestManager
             if ($token['token_time'] != null && isset($postToken)) {
                 if ($token['token'] == $postToken) {
                     if ($token['token_time'] >= time() - $time) {
-                        unset($_SESSION[$nameToken]);
+                        $this->unsetSession($nameToken);
                     }
                 }
             }

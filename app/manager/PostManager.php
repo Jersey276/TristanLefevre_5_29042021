@@ -108,8 +108,7 @@ class PostManager
                     true
                 )
             );
-            var_dump($this->query->newArticle());
-            $result = (App::getDB())->prepare(
+            (App::getDB())->prepare(
                 $this->query->newArticle(),
                 [':idUser' => $user->getidUser(),
                 ':titlePost' => $post['titlePost'],
