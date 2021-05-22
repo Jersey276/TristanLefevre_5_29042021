@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html lang="fr">
     <head>
         <meta charset="utf-8"/>
         <title>{% block title %}{% endblock %} - Tristan Lefèvre</title>
@@ -20,14 +21,14 @@
                 <div class="d-flex flex-column">
                     <h1> Tristan Lefevre</h1>
                     <nav class="navbar navbar-dark navbar-expand-lg w-100">
-                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                            <span class="navbar-toggler-icon"></span>
-                        </button>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
                         <div class="collapse navbar-collapse" id="navbarNav">
-                            <ul class="navbar-nav">
-                                <li class="nav-item"><a href="#" class="nav-link">acceuil</a></li>
-                                <li class="nav-item"><a href="#" class="nav-link">articles </a></li>
-                                <li class="nav-item flex-end">
+                            <ul class="navbar-nav w-100">
+                                <li class="nav-item"><a href="\" class="nav-link">acceuil</a></li>
+                                <li class="nav-item mr-100"><a href="\post" class="nav-link">articles </a></li>
+                                <li class="nav-item">
                                     {% if guest() %}
                                         <a href="/login" class="btn btn-success">Connexion</a>
                                         <a href="/register" class="btn btn-warning">Inscription</a>
@@ -41,7 +42,7 @@
                                     {% endif %}
                                 </li>
                             </ul>
-                        <div>
+                        </div>
                     </nav>
                 </div>
             </div>

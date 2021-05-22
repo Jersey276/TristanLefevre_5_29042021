@@ -3,8 +3,9 @@
 namespace app;
 
 use AltoRouter;
-use app\controller\homeController;
-use app\controller\authController;
+use app\controller\HomeController;
+use app\controller\AuthController;
+use app\controller\PostController;
 use core\auth\roleChecker;
 
 class Router {
@@ -44,12 +45,16 @@ class Router {
                         return header( filter_input(INPUT_SERVER, "SERVER_PROTOCOL") . ' 404 Not Found');
                     }
                 }
-                switch ($match['target']['c']) {
-                    case ('homeController') :
-                        $controller = new homeController();
+                switch ($match['target']['c'])
+                {
+                    case ('HomeController') :
+                        $controller = new HomeController();
                         break;
-                    case ('authController') :
-                        $controller = new authController();
+                    case ('AuthController') :
+                        $controller = new AuthController();
+                        break;
+                    case ('PostController') :
+                        $controller = new PostController();
                         break;
                 };
                 call_user_func_array(array($controller,$match['target']['a']), $match['params']);
