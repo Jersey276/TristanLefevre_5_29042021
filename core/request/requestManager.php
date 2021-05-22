@@ -94,7 +94,7 @@ class RequestManager
 	 */
 	public function unsetSession($varName)
 	{
-		return unset($_SESSION[$varName]);
+		unset($_SESSION[$varName]);
 	}
     /**
      * kill session
