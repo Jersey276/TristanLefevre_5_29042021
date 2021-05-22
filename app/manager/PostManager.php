@@ -44,7 +44,7 @@ class PostManager
      * Get post by id
      * @param int id of post
      * @param bool ask for CSRFtoken
-     * @return mixed Post data on most case, false if a writer try to edit a post he didn't write
+     * @return array result on true with Post data on success case, false with code on fail case or forbidden access
      */
     public function getPost($id, $editor = false)
     {
@@ -56,20 +56,22 @@ class PostManager
                 "app\model\Post",
                 true
             );
-        $post = (new Post())->hydrate($postStatement);
-        $var = ['post' => $post];
-        if ($editor) {
-            $roleChecker = new RoleChecker();
-            if($roleChecker->role("Admin") || $roleChecker->role("Writer") &&
+        if ($postStatement != false) {
+            $post = (new Post())->hydrate($postStatement);
+            $var = ['post' => $post];
+            if ($editor) {
+                $roleChecker = new RoleChecker();
+                if ($roleChecker->role("Admin") || $roleChecker->role("Writer") &&
                 $post->getauthor() == $this->request->session('pseudo')) {
                     $token = $this->request->newCSRFLongToken('post');
                     $var = array_merge($var, ['CSRFToken' => $token]);
+                } else {
+                    return ['result' =>false, 'code' => 403];
                 }
-                else {
-                    return false;
-                }
+            }
+            return ['result' => true, 'var' => $var];
         }
-        return $var;
+        return ['result' => false, 'code' => 404];
     }
 
     /**
