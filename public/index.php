@@ -28,9 +28,10 @@ $router
 
     ->get('/admin','HomeController','adminHome','Writer')
     ->get('/admin/post','PostController','listPostsAdmin','Writer')
-    ->get('/admin/post/add','PostController','addPost','Writer')
-    ->post('/admin/post/add','PostController','postPost','Writer')
-    ->get('/admin/post/[i:id]','PostController','ModifyPost','Writer')
-    ->post('/admin/post/[i:id]','PostController','alterPostPost','Writer')
+    ->get('/admin/post/add','PostController','addPostForm','Writer')
+    ->post('/admin/post/add','PostController','addPost','Writer')
+    ->get('/admin/post/[i:id]','PostController','modifyPostForm','Writer')
+    ->post('/admin/post/[i:id]','PostController','modifyPost','Writer')
+    ->post('/admin/post/[i:id','PostController','removePostForm',)
     ->post('/admin/post/remove/[i:id]','PostController','removePost','Writer')   
     ->run();

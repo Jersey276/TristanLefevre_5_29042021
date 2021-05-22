@@ -44,7 +44,7 @@ class PostManager
      * Get post by id
      * @param int id of post
      * @param bool ask for CSRFtoken
-     * @return Post article
+     * @return mixed Post data on most case, false if a writer try to edit a post he didn't write
      */
     public function getPost($id, $editor = false)
     {
@@ -59,8 +59,15 @@ class PostManager
         $post = (new Post())->hydrate($postStatement);
         $var = ['post' => $post];
         if ($editor) {
-            $token = $this->request->newCSRFLongToken('post');
-            $var = array_merge($var, ['CSRFToken' => $token]);
+            $roleChecker = new RoleChecker();
+            if($roleChecker->role("Admin") || $roleChecker->role("Writer") &&
+                $post->getauthor() == $this->request->session('pseudo')) {
+                    $token = $this->request->newCSRFLongToken('post');
+                    $var = array_merge($var, ['CSRFToken' => $token]);
+                }
+                else {
+                    return false;
+                }
         }
         return $var;
     }
@@ -127,7 +134,7 @@ class PostManager
             'var' => [
                 'type' => "danger",
                 "message" => $post['errMessage'],
-                "CSRFToken" => $this->asknewCSRFLongToken('newPost')
+                "CSRFToken" => $this->asknewCSRFLongToken('post')
             ]
         ];
     }
@@ -154,7 +161,7 @@ class PostManager
                 "var" => [
                     "type" => "success",
                     "message" => "l'article a été mis à jour",
-                    "CSRFToken" => $this->asknewCSRFLongToken('newPost')
+                    "CSRFToken" => $this->asknewCSRFLongToken('post')
                 ]
             ];
         }
@@ -163,7 +170,7 @@ class PostManager
             'var' => [
                 'type' => "danger",
                 "message" => $post['errMessage'],
-                "CSRFToken" => $this->asknewCSRFLongToken('newPost')
+                "CSRFToken" => $this->asknewCSRFLongToken('post')
             ]
         ];
     }

@@ -90,12 +90,16 @@ class PostController extends AbstractController
      */
     public function modifyPostForm($id)
     {
-        return print_r(
-            $this->render(
-                'admin/post/adminPostForm',
-                (new PostManager())->getPost($id, true)
-            )
-        );
+        $post = (new PostManager())->getPost($id, true);
+        if ($post != false) {
+            return print_r(
+                $this->render(
+                    'admin/post/adminPostForm',
+                    $post
+                )
+            );
+        }
+        return $this->error403(true);
     }
 
     /**
@@ -119,12 +123,14 @@ class PostController extends AbstractController
      */
     public function removePostForm($id)
     {
-        $post = ((new PostManager)->getPost($id))['post'];
-        $token = ((new PostManager)->askNewCSRFLongToken("removePost"));
-        return print_r(
-            $this->render(
-                'admin/adminMessage',
-                [
+        $postEditor = (new PostManager)->getPost($id, true);
+        if ($postEditor != false) {
+            $post = $postEditor['post'];
+            $token = ((new PostManager)->askNewCSRFLongToken("removePost"));
+            return print_r(
+                $this->render(
+                    'admin/adminMessage',
+                    [
                     "isForm" => true,
                     "type" => "danger",
                     "message" => "Etes-vous sûr de vouloir supprimer cet article ?",
@@ -149,8 +155,10 @@ class PostController extends AbstractController
                         "message" => "Non"
                     ]
                 ]
-            )
-        );
+                )
+            );
+        }
+        return $this->error403(true);
     }
 
     /**
@@ -160,7 +168,7 @@ class PostController extends AbstractController
      */
     public function removePost($id)
     {
-       (new PostManager)->removePost($id);
+        (new PostManager)->removePost($id);
         return header('Location: /admin/post');
     }
 }
