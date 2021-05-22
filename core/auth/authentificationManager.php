@@ -76,11 +76,10 @@ class AuthentificationManager
 	 * get user and fill session var with 
 	 * @param string login
 	 * @param string password
-	 * @return array result with message in case of connection fail
 	 */
 	public function login($login, $password) 
 	{
-		if ($this->checkTry())
+		if($this->checkTry())
 		{
 			$query = new SelectQuery('select');
 			$statement = $query
@@ -107,7 +106,7 @@ class AuthentificationManager
 			return ["isConnected" => false, "message" => "identifiant / mot de passe incorrect, veuiller ressayer"];
 		}
 		return ["isConnected" => false, "message" => "vous avez fais trop d' essai, veuiller attendre 1 minute avant de recommencer"];
-    }
+	}
 
 	/**
 	 * insert new user into database
