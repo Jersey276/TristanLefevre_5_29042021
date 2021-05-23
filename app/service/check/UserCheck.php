@@ -21,8 +21,8 @@ class UserCheck
 	function isEmailUsed($info)
 	{
 		$query = new SelectQuery;
-		$statement = $query->select("*")->from('user')->where("email ='" . $info ."'")->toString();
-		$check = (APP::getDB())->prepare($statement,"select","app\model\User");
+		$statement = $query->select("*")->from('user')->where("email = :email")->toString();
+		$check = (APP::getDB())->prepare($statement,[':email' => $info],"select","app\model\User");
 		if ($check == [])
 		{
 			return false;
@@ -38,8 +38,8 @@ class UserCheck
 	function isPseudoUsed($info)
 	{
 		$query = new SelectQuery;
-		$statement = $query->select("*")->from('user')->where("pseudo ='" . $info . "'")->toString();
-		$check = (APP::getDB())->prepare($statement,"select", 'app\model\User');
+		$statement = $query->select("*")->from('user')->where("pseudo = :pseudo")->toString();
+		$check = (APP::getDB())->prepare($statement,[':pseudo' => $info],"select", 'app\model\User');
 		if ($check == [])
 		{
 			return false;

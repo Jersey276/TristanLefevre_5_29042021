@@ -22,7 +22,7 @@ class InsertQuery
 
     public function value()
 	{
-        array_push($this->values, " '" .implode("', '", func_get_args()) . " '");
+        array_push($this->values, " " .implode(", ", func_get_args()) . " ");
         return $this;
     }
 
