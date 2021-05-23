@@ -50,7 +50,12 @@ class AuthentificationManager
     {
         $request = new RequestManager();
         $try = $this->database->prepare(
-            (new SelectQuery())->select('*')->from('loginlog')->where('TIMEDIFF( NOW(), timestamp) < "00:01:00"')->where("ipAddress = :ipAddress")->toString(),
+            (new SelectQuery())
+                ->select('*')
+                ->from('loginlog')
+                ->where('TIMEDIFF( NOW(), timestamp) < "00:01:00"')
+                ->where("ipAddress = :ipAddress")
+                ->toString(),
             [ ":ipAddress" => $request->getIpAddr()],
             "select",
             "loginLog"
@@ -117,12 +122,15 @@ class AuthentificationManager
                     $request->session('role', $account['role']);
                     return ['isConnected' => true];
                 }
-                return ["isConnected" => false, "message" => "l'adresse mail n'a pas été vérifié, consulter vos mails"];
+                return ["isConnected" => false,
+                        "message" => "l'adresse mail n'a pas été vérifié, consulter vos mails"];
             }
             $this->reportTry();
-            return ["isConnected" => false, "message" => "identifiant / mot de passe incorrect, veuiller ressayer"];
+            return ["isConnected" => false,
+                    "message" => "identifiant / mot de passe incorrect, veuiller ressayer"];
         }
-        return ["isConnected" => false, "message" => "vous avez fais trop d' essai, veuiller attendre 1 minute avant de recommencer"];
+        return ["isConnected" => false, "message" =>
+                "vous avez fais trop d' essai, veuiller attendre 1 minute avant de recommencer"];
     }
 
     /**
