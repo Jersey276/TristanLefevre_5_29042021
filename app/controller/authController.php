@@ -44,7 +44,12 @@ class AuthController extends AbstractController
      */
     public function loginForm()
     {
-        return print_r($this->render('auth/loginForm', ['CSRFtoken' => (new UserManager())->getCSRFToken()]));
+        return print_r(
+            $this->render(
+                'auth/loginForm',
+                ['CSRFtoken' => (new UserManager())->getCSRFToken()]
+            )
+        );
     }
 
     /**
@@ -67,7 +72,12 @@ class AuthController extends AbstractController
      */
     public function forgotPasswordForm()
     {
-        return print_r($this->render('auth/forgotPasswordForm', ['CSRFtoken' => (new UserManager())->getCSRFToken() ]));
+        return print_r(
+            $this->render(
+                'auth/forgotPasswordForm',
+                ['CSRFtoken' => (new UserManager())->getCSRFToken() ]
+            )
+        );
     }
 
     /**
@@ -79,9 +89,19 @@ class AuthController extends AbstractController
     {
         $response = (new UserManager())->forgotPassword();
         if ($response['result']) {
-            return print_r($this->render("message", $response['messageVar']));
+            return print_r(
+                $this->render(
+                    "message",
+                    $response['messageVar']
+                )
+            );
         }
-        return print_r($this->render("auth/forgotPasswordForm", $response['errVar']));
+        return print_r(
+            $this->render(
+                "auth/forgotPasswordForm",
+                $response['errVar']
+            )
+        );
     }
 
     /**
@@ -96,7 +116,7 @@ class AuthController extends AbstractController
         if ($response['result']) {
             return print_r($this->render('auth/changePasswordForm', $response['var']));
         }
-        return header(filter_input(INPUT_SERVER, "SERVER_PROTOCOL") . ' 404 Not Found');
+        return $this->error404();
     }
 
     /**
