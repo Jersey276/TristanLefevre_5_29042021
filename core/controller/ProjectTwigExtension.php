@@ -9,19 +9,18 @@ class ProjectTwigExtension extends \Twig\Extension\AbstractExtension
      *
      * @return \Twig\TwigFunction[]
      */
-    public function getFunctions() 
-	{
-		return 
+    public function getFunctions()
+    {
+        return
         [new \Twig\TwigFunction('guest', function () {
             return \core\auth\roleChecker::guest();
         }) ,
-		new \Twig\TwigFunction('auth', function ($role) {
+        new \Twig\TwigFunction('auth', function ($role) {
             return \core\auth\roleChecker::role($role);
         }) ,
         new \Twig\TwigFunction('string', function ($string) {
             return html_entity_decode($string, ENT_QUOTES);
         })
         ];
-	}
-
+    }
 }

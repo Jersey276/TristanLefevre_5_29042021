@@ -6,11 +6,11 @@ use core\database\SelectQuery;
 
 class AuthQuery
 {
-	function getTokenQuery($token)
-	{
-		return (new SelectQuery())->select('*')
-		->from('token')
-		->where("token = '" . $token . "'")
-		->toString();
-	}
+    public function getTokenQuery()
+    {
+        return (new SelectQuery())->select('*')
+        ->from('token')
+        ->where("token = :token")
+        ->toString();
+    }
 }
