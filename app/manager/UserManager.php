@@ -35,7 +35,11 @@ class UserManager
     {
         $post = (new AuthCheck)->registerCheck();
         if (empty($post['err'])) {
-            $awnser = $this->auth->register($post["pseudo"], $post["password"], $post["email"]);
+            $awnser = $this->auth->register(
+                $post["pseudo"],
+                $post["password"],
+                $post["email"]
+            );
             if ($awnser != false) {
                 $token = $this->auth->askToken("email", $awnser);
                 (new UserMail())->checkEmailMail($post['email'], $token);
@@ -135,11 +139,12 @@ class UserManager
         if (empty($post['err'])) {
             $query = new AuthQuery();
             $token = (App::getDB())->prepare(
-				$query->getTokenQuery(),
-				[ ":token" => $keyToken],
-				"select",
-				"app\model\token",
-				true);
+                $query->getTokenQuery(),
+                [ ":token" => $keyToken],
+                "select",
+                "app\model\token",
+                true
+            );
             if ($this->auth->useToken($token, "password", $post['password'])) {
                 return [
                 'result' => true,
@@ -169,7 +174,13 @@ class UserManager
      */
     public function changePasswordForm($keyToken)
     {
-        $token = (App::getDB())->prepare((new AuthQuery())->getTokenQuery(),[':token' => $keyToken], "select", "app\model\Token", true);
+        $token = (App::getDB())->prepare(
+            (new AuthQuery())->getTokenQuery(),
+            [':token' => $keyToken],
+            "select",
+            "app\model\Token",
+            true
+        );
         if ($token != false) {
             return [
                 'result' => true,
@@ -190,7 +201,13 @@ class UserManager
      */
     public function validEmail($keyToken)
     {
-        $token = (App::getDB())->prepare((new AuthQuery())->getTokenQuery(),[':token' => $keyToken], "select", "token", true);
+        $token = (App::getDB())->prepare(
+            (new AuthQuery())->getTokenQuery(),
+            [':token' => $keyToken],
+            "select",
+            "token",
+            true
+        );
         if ($this->auth->useToken($token, "email")) {
             return [
                 'type' => 'success',

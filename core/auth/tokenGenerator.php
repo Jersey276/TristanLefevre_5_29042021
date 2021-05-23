@@ -1,8 +1,10 @@
-<?php 
+<?php
 
 namespace core\auth;
-class tokenGenerator {
-	/**
+
+class tokenGenerator
+{
+    /**
      * @param int $lenght : Permet de générer une chaine de caractères aléatoire de 60 caractères par défaut
      * @return String
      */
