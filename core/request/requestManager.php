@@ -78,7 +78,7 @@ class RequestManager
         if (isset($val)) {
             $_SESSION[$key] = $val;
         }
-        return filter_var($_SESSION[$key]);
+        return $_SESSION[$key];
     }
     /**
      * Verify if this session variable exist
