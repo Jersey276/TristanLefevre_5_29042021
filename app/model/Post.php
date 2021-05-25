@@ -14,6 +14,7 @@ class Post extends AbstractModel
     private $contentPost;
     private $createdAt;
     private $author;
+    private $nbComToApprouve;
 
     public function getDisplayUrl()
     {
@@ -26,6 +27,11 @@ class Post extends AbstractModel
     public function getRemoveUrl()
     {
         return "/admin/post/remove/" . $this->idPost;
+    }
+
+    public function getCommentUrl()
+    {
+        return "/admin/post/" . $this->idPost. "/comment";
     }
 
     public function date()
@@ -59,6 +65,11 @@ class Post extends AbstractModel
     {
         $this->author = $author;
     }
+    public function setnbComToApprouve($nbComToApprouve)
+    {
+        $this->nbComToApprouve = $nbComToApprouve;
+    }
+
     //getter
     public function getidPost()
     {
@@ -83,5 +94,9 @@ class Post extends AbstractModel
     public function getauthor()
     {
         return $this->author;
+    }
+    public function getnbComToApprouve()
+    {
+        return $this->nbComToApprouve;
     }
 }

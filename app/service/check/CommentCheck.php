@@ -34,5 +34,18 @@ class CommentCheck
         return ['err' => true,
                 'errMessage' => "Votre commentaire n'a pu être posté, veuiller ressayer"];
     }
-}
 
+	public function checkAdminComment()
+	{		
+		$post = $this->request->getPost([
+			'token' => 'longToken',
+            'nameToken' => "string"
+		]);
+		if ($post != false)
+		{
+			return $post;
+		}
+		return ['err' => true,
+				'errMessage' => "une erreur a eu lieu avec vos données"];
+	}
+}

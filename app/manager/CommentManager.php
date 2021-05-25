@@ -93,5 +93,55 @@ class CommentManager extends AbstractManager
             ]
         ];
     }
-}
 
+    public function validComment($id)
+    {
+        $post = (new CommentCheck())->checkAdminComment();
+        if (empty($post['err'])) {
+            (App::getDB())->prepare(
+                $this->query->approuveComment(),
+                [':idComment' => $id],
+                'update'
+            );
+            return [
+                'result' => true,
+                'message' => [
+                    'type' => 'success',
+                    'text' => 'commentaire approuvé et posté'
+                ]
+            ];
+        }
+        return [
+            'result' => false,
+            'message' => [
+                'type' => 'danger',
+                'text' => $post['errMessage']
+            ]
+        ];
+    }
+    public function removeComment($id)
+    {
+        $post = (new CommentCheck())->checkAdminComment();
+        if (empty($post['err'])) {
+            (App::getDB())->prepare(
+                $this->query->removeComment(),
+                [':idComment' => $id],
+                'delete'
+            );
+            return [
+                'result' => true,
+                'message' => [
+                    'type' => 'success',
+                    'text' => 'commentaire supprimé'
+                ]
+            ];
+        }
+        return [
+            'result' => false,
+            'message' => [
+                'type' => 'danger',
+                'text' => $post['errMessage']
+            ]
+        ];
+    }
+}
