@@ -8,6 +8,7 @@ class SelectQuery
     private $from = [];
     private $join = [];
     private $order;
+    private $group;
 
     public function select()
     {
@@ -38,6 +39,13 @@ class SelectQuery
         $this->join[] = ' LEFT JOIN ' . $table . ' ON ' . $arg;
         return $this;
     }
+
+    public function groupBy($column)
+    {
+        $this->group = $column;
+        return $this;
+    }
+
     public function orderBy($column, $direction)
     {
         $this->order = $column . " " . $direction;
@@ -51,9 +59,13 @@ class SelectQuery
         if (isset($this->conditions)) {
             $message = $message . ' WHERE ' . implode(' AND ', $this->conditions);
         }
+        if (isset($this->group)) {
+            $message = $message . ' GROUP BY ' . $this->group;
+        }
         if (isset($this->order)) {
             $message = $message . ' ORDER BY ' . $this->order;
         }
+
         return $message;
     }
 }

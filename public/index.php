@@ -24,14 +24,17 @@ $router
     ->get('/logout','AuthController','logout','User')
     
     ->get('/post','PostController','listPosts')
-    ->get('/post/[i:id]','PostController',"getPost")
+    ->get('/post/[i:id]','PostController','getPost')
+    ->post('/post/[i:id]','CommentController','postComment','User')
 
     ->get('/admin','HomeController','adminHome','Writer')
+
     ->get('/admin/post','PostController','listPostsAdmin','Writer')
     ->get('/admin/post/add','PostController','addPostForm','Writer')
     ->post('/admin/post/add','PostController','addPost','Writer')
     ->get('/admin/post/[i:id]','PostController','modifyPostForm','Writer')
     ->post('/admin/post/[i:id]','PostController','modifyPost','Writer')
-    ->post('/admin/post/[i:id','PostController','removePostForm',)
-    ->post('/admin/post/remove/[i:id]','PostController','removePost','Writer')   
+    ->post('/admin/post/[i:id]','PostController','removePostForm','Writer')
+    ->post('/admin/post/remove/[i:id]','PostController','removePost','Writer')
+
     ->run();

@@ -6,6 +6,7 @@ use AltoRouter;
 use app\controller\HomeController;
 use app\controller\AuthController;
 use app\controller\PostController;
+use app\controller\CommentController;
 use app\controller\ErrorController;
 use core\auth\roleChecker;
 
@@ -62,6 +63,9 @@ class Router
                             break;
                         case ('PostController'):
                             $controller = new PostController();
+                            break;
+                        case ('CommentController'):
+                            $controller = new CommentController();
                             break;
                         default:
                             return $this->throwError();

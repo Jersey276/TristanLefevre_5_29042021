@@ -49,7 +49,7 @@ class RequestManager
             //check int and clean it
             case "int":
                 if (filter_var($data, FILTER_VALIDATE_INT)) {
-                    return filter_var($data, FILTER_SANITIZE_INT);
+                    return filter_var($data,FILTER_SANITIZE_NUMBER_INT);
                 }
                 return false;
                 break;
