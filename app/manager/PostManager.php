@@ -13,6 +13,8 @@ use core\auth\RoleChecker;
 
 use core\request\RequestManager;
 
+use core\manager\AbstractManager;
+
 use app\model\Post;
 use app\model\User;
 
@@ -21,15 +23,14 @@ use app\model\User;
  * @author Tristan
  * @version 1
  */
-class PostManager
+class PostManager extends AbstractManager
 {
     private $query;
-    private $request;
 
     public function __construct()
     {
+        parent::__construct(App::getDB());
         $this->query = new PostQuery();
-        $this->request = new RequestManager();
     }
     /**
      * Collect all post from database
@@ -195,13 +196,4 @@ class PostManager
         return false;
     }
 
-    /**
-     * generate a CSRF Long Token
-     * @param string function
-     * @return array token info (his name and his key)
-     */
-    public function askNewCSRFLongToken($function)
-    {
-        return $this->request->newCSRFLongToken($function);
-    }
 }

@@ -24,6 +24,18 @@ class PostQuery
             ->toString();
     }
 
+    public function AdminGetAllArticle()
+    {
+        return (new SelectQuery)
+            ->select('post.idPost', 'post.titlePost', 'post.chapoPost', 'post.createdAt', 'user.pseudo as author',)
+            ->from('post')
+            ->leftJoin('user', 'user.idUser = post.idUser')
+            ->leftJoin('comment','comment.idPost = post.idPost')
+            ->where('comment.isApprouved = 0')
+            ->groupBy('idPost')
+            ->toString();
+    }
+
     /**
      * get article by id
      * @param int id of article
@@ -32,30 +44,56 @@ class PostQuery
     public function getArticle()
     {
         return (new SelectQuery)
-            ->select('post.idPost', 'post.titlePost', 'post.chapoPost', 'post.contentPost', 'post.createdAt', 'user.pseudo as author')
+            ->select(
+                'post.idPost',
+                'post.titlePost',
+                'post.chapoPost',
+                'post.contentPost',
+                'post.createdAt',
+                'user.pseudo as author'
+            )
             ->from('post')
             ->leftJoin('user', 'user.idUser = post.idUser')
             ->where("post.idPost = :id")
+            ->groupBy('idPost')
             ->toString();
     }
 
     public function getMyArticles()
     {
         return (new SelectQuery)
-        ->select('post.idPost', 'post.titlePost', 'post.chapoPost', 'post.createdAt', 'user.pseudo as author')
+        ->select(
+            'post.idPost',
+            'post.titlePost',
+            'post.chapoPost',
+            'post.createdAt',
+            'user.pseudo as author',
+            'COUNT(CASE WHEN comment.isApprouved=0 THEN 1 END) as nbComToApprouve'
+        )
         ->from('post')
         ->leftJoin('user', 'user.idUser = post.idUser')
+        ->leftJoin('comment','comment.idPost = post.idPost')
         ->where("user.pseudo = :pseudo")
+        ->groupBy('idPost')
         ->toString();
     }
 
     public function getOtherArticles()
     {
         return (new SelectQuery)
-        ->select('post.idPost', 'post.titlePost', 'post.chapoPost', 'post.createdAt', 'user.pseudo as author')
+        ->select(
+            'post.idPost',
+            'post.titlePost',
+            'post.chapoPost',
+            'post.createdAt',
+            'user.pseudo as author',
+            'COUNT(CASE WHEN comment.isApprouved=0 THEN 1 END) as nbComToApprouve'
+            )
         ->from('post')
         ->leftJoin('user', 'user.idUser = post.idUser')
+        ->leftJoin('comment','comment.idPost = post.idPost')
         ->where("user.pseudo != :pseudo")
+        ->groupBy('idPost')
         ->toString();
     }
     public function newArticle()
