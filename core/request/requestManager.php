@@ -49,7 +49,7 @@ class RequestManager
             //check int and clean it
             case "int":
                 if (filter_var($data, FILTER_VALIDATE_INT)) {
-                    return filter_var($data, FILTER_SANITIZE_INT);
+                    return filter_var($data,FILTER_SANITIZE_NUMBER_INT);
                 }
                 return false;
                 break;
@@ -78,7 +78,7 @@ class RequestManager
         if (isset($val)) {
             $_SESSION[$key] = $val;
         }
-        return filter_var($_SESSION[$key]);
+        return $_SESSION[$key];
     }
     /**
      * Verify if this session variable exist

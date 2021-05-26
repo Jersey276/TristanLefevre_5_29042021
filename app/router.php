@@ -6,6 +6,7 @@ use AltoRouter;
 use app\controller\HomeController;
 use app\controller\AuthController;
 use app\controller\PostController;
+use app\controller\CommentController;
 use app\controller\ErrorController;
 use core\auth\roleChecker;
 
@@ -50,23 +51,10 @@ class Router
                 $check = $this->checkRuleRole($match['target']['ur']);
             }
             if ($match['target']['ur'] == null ||
-                    $match['target']['ur'] != null &&
-                    $check['result']
-                ) {
-                switch ($match['target']['c']) {
-                        case ('HomeController'):
-                            $controller = new HomeController();
-                            break;
-                        case ('AuthController'):
-                            $controller = new AuthController();
-                            break;
-                        case ('PostController'):
-                            $controller = new PostController();
-                            break;
-                        default:
-                            return $this->throwError();
-                            break;
-                    };
+                $match['target']['ur'] != null &&
+                $check['result']
+            ) {
+                $controller = $this->newController($match['target']['c']);
                 call_user_func_array(array($controller,$match['target']['a']), $match['params']);
                 return $this;
             }
@@ -119,5 +107,26 @@ class Router
             default:
                 return (new ErrorController())->error404();
         }
+    }
+
+    public function newController($controller = "ErrorController")
+    {
+        switch ($controller) {
+            case ('HomeController'):
+                return new HomeController();
+                break;
+            case ('AuthController'):
+                return new AuthController();
+                break;
+            case ('PostController'):
+                return new PostController();
+                break;
+            case ('CommentController'):
+                return new CommentController();
+                break;
+            default:
+                return $this->throwError();
+                break;
+        };
     }
 }

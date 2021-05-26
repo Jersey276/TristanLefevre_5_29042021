@@ -2,9 +2,10 @@
 
 namespace app\controller;
 
-use app\model\article;
 use app\manager\PostManager;
+use app\manager\CommentManager;
 use core\controller\AbstractController;
+use core\auth\RoleChecker;
 
 /**
  * Controller for post system
@@ -36,6 +37,11 @@ class PostController extends AbstractController
     {
         $post = (new PostManager())->getPost($id);
         if ($post['result']) {
+            $comment = new CommentManager();
+            $post['var']['comments'] = $comment->getcomment($id);
+            if (roleChecker::role('User')) {
+                $post['var']['token'] = $comment->askNewCSRFLongToken('comment');
+            }
             return print_r(
                 $this->render(
                     'post/postDetail',
@@ -126,7 +132,8 @@ class PostController extends AbstractController
     }
 
     /**
-     *
+     * Show message for prevent post removal
+     * @return array with all message data
      */
     public function removePostForm($id)
     {
