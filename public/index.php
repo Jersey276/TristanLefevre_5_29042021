@@ -37,4 +37,7 @@ $router
     ->post('/admin/post/[i:id]','PostController','removePostForm','Writer')
     ->post('/admin/post/remove/[i:id]','PostController','removePost','Writer')
 
+    ->get('/admin/post/[i:post]/comment','CommentController', 'adminListComment','Admin')
+    ->post('/admin/post/[i:post]/comment/[i:comment]/approuve','CommentController','validComment','Admin')
+    ->post('/admin/post/[i:post]/comment/[i:comment]/remove','CommentController','removeComment','Admin')
     ->run();

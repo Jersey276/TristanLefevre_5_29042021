@@ -28,5 +28,31 @@ class CommentController extends AbstractController
             )
         );
     }
-}
 
+	public function adminListComment($post, $message = null)
+	{
+		$response = (new CommentManager())->getComment($post,true);
+		if ($message != null)
+		{
+			$response['message'] = $message;
+		}
+		return print_r(
+			$this->render(
+				'admin/post/adminPostComment',
+				$response
+			)
+		);
+	}
+
+	public function validComment($post, $comment)
+	{
+		$response = (new CommentManager())->validComment($comment);
+		$this->adminListComment($post, $response['message']);
+	}
+
+	public function removeComment($post, $comment)
+	{
+		$response = (new CommentManager())->removeComment($comment);
+		$this->adminListComment($post, $response['message']);
+	}
+}
