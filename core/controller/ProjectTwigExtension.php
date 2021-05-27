@@ -20,6 +20,9 @@ class ProjectTwigExtension extends \Twig\Extension\AbstractExtension
         }) ,
         new \Twig\TwigFunction('string', function ($string) {
             return html_entity_decode($string, ENT_QUOTES);
+        }),
+        new \Twig\TwigFunction('getSession', function ($session) {
+            return (new \core\request\RequestManager())->session($session);
         })
         ];
     }
