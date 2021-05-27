@@ -20,12 +20,17 @@ $router
     ->post('/forgotPassword','AuthController','forgotPassword','Guest')
     ->get('/forgotPassword/[a:token]','AuthController','changePasswordForm','Guest')
     ->post('/forgotPassword/[a:token]','AuthController','changePassword','Guest')
-    ->get('/login/[a:token]','AuthController','validEmail','Guest')
+    ->get('/login/[a:token]','AuthController','validEmail')
     ->get('/logout','AuthController','logout','User')
     
     ->get('/post','PostController','listPosts')
     ->get('/post/[i:id]','PostController','getPost')
     ->post('/post/[i:id]','CommentController','postComment','User')
+
+    ->get('/profil/[a:profil]','UserController','modifyProfilForm','User')
+    ->post('/profil/[a:profil]/email','UserController','changeEmail','User')
+    ->post('/profil/[a:profil]/password','UserController','changePassword','User')
+    ->post('/profil/[a:profil]/remove','UserController','removeProfil','User')
 
     ->get('/admin','HomeController','adminHome','Writer')
 
@@ -40,4 +45,11 @@ $router
     ->get('/admin/post/[i:post]/comment','CommentController', 'adminListComment','Admin')
     ->post('/admin/post/[i:post]/comment/[i:comment]/approuve','CommentController','validComment','Admin')
     ->post('/admin/post/[i:post]/comment/[i:comment]/remove','CommentController','removeComment','Admin')
+
+    ->get('/admin/profil','UserController','adminListProfil','Admin')
+    ->get('/admin/profil/[a:profil]','UserController','adminModifyProfilForm','Admin')
+    ->post('/admin/profil/[a:profil]/email','UserController','adminModifyEmail','Admin')
+    ->post('/admin/profil/[a:profil]/role','UserController','adminModifyRole','Admin')
+    ->get('/admin/profil/[a:profil]/remove','UserController','adminRemoveProfilForm','Admin')
+    ->post('/admin/profil/[a:profil]/remove','UserController','adminRemoveProfil','Admin')
     ->run();

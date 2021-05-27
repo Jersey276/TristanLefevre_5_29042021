@@ -8,7 +8,9 @@ use app\controller\AuthController;
 use app\controller\PostController;
 use app\controller\CommentController;
 use app\controller\ErrorController;
+use app\controller\UserController;
 use core\auth\roleChecker;
+use core\request\RequestManager;
 
 class Router
 {
@@ -46,6 +48,7 @@ class Router
     public function run()
     {
         $match = $this->router->match();
+        $this->checkIpAddress();
         if ($match != false) {
             if ($match['target']['ur'] != null) {
                 $check = $this->checkRuleRole($match['target']['ur']);
@@ -61,6 +64,22 @@ class Router
             return $this->throwError($check['code']);
         }
         return $this->throwError();
+    }
+
+    /**
+     * Check if user is still the same, kill session if ip Address is different
+     * @return true|null true if this session is used by same ip address, void if not
+     */
+    public function checkIpAddress()
+    {
+        if (!roleChecker::guest()) {
+            $request = new RequestManager();
+            if ($request->isSetSession('ipAddress') && $request->session('ipAddress') == $request->getIpAddr()) {
+                return null;
+            }
+            $request->killSession();
+            session_start();
+        }
     }
     
     /**
@@ -123,6 +142,9 @@ class Router
                 break;
             case ('CommentController'):
                 return new CommentController();
+                break;
+            case ('UserController'):
+                return new UserController();
                 break;
             default:
                 return $this->throwError();

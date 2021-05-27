@@ -12,7 +12,7 @@ class ContactMail
 	 */
 	function contactMail($formData)
 	{
-		MailManager::sendMail(
+		(new MailManager())->sendMail(
 			'tristan-lefevre@hotmail.fr', 
 			"contact de ". $formData['name'], 
 			$formData['name']. '('. $formData['email'] . ') vous demande : /r/n'. $formData['message']);
