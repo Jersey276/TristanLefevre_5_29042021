@@ -120,6 +120,7 @@ class AuthentificationManager
                     $request->session('pseudo', $account['pseudo']);
                     $request->session('email', $account['email']);
                     $request->session('role', $account['role']);
+                    $request->session('ipAddress', $request->getIpAddr());
                     return ['isConnected' => true];
                 }
                 return ["isConnected" => false,
