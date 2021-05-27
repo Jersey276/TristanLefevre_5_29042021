@@ -20,12 +20,17 @@ $router
     ->post('/forgotPassword','AuthController','forgotPassword','Guest')
     ->get('/forgotPassword/[a:token]','AuthController','changePasswordForm','Guest')
     ->post('/forgotPassword/[a:token]','AuthController','changePassword','Guest')
-    ->get('/login/[a:token]','AuthController','validEmail','Guest')
+    ->get('/login/[a:token]','AuthController','validEmail')
     ->get('/logout','AuthController','logout','User')
     
     ->get('/post','PostController','listPosts')
     ->get('/post/[i:id]','PostController','getPost')
     ->post('/post/[i:id]','CommentController','postComment','User')
+
+    ->get('/profil/[a:profil]','UserController','modifyProfilForm','User')
+    ->post('/profil/[a:profil]/email','UserController','changeEmail','User')
+    ->post('/profil/[a:profil]/password','UserController','changePassword','User')
+    ->post('/profil/[a:profil]/remove','UserController','removeProfil','User')
 
     ->get('/admin','HomeController','adminHome','Writer')
 

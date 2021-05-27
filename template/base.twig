@@ -41,7 +41,7 @@
 										<a href="/register" class="btn btn-warning">Inscription</a>
 									{% endif %}
 									{% if auth('User') %}
-										<a href="/profil" class="btn btn-success">Profil</a>
+										<a href="/profil/{{ getSession('pseudo') }}" class="btn btn-success">Profil</a>
 										{% if auth('Writer') %}
 											<a href="/admin" class="btn btn-warning">Admin</a>
 										{% endif %}

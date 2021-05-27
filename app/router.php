@@ -8,6 +8,7 @@ use app\controller\AuthController;
 use app\controller\PostController;
 use app\controller\CommentController;
 use app\controller\ErrorController;
+use app\controller\UserController;
 use core\auth\roleChecker;
 
 class Router
@@ -123,6 +124,9 @@ class Router
                 break;
             case ('CommentController'):
                 return new CommentController();
+                break;
+            case ('UserController'):
+                return new UserController();
                 break;
             default:
                 return $this->throwError();
