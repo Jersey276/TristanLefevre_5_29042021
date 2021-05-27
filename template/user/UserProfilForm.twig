@@ -1,0 +1,50 @@
+{% extends "base.twig" %}
+
+{% block title %}Editer votre profil{% endblock %}
+{% block content %}
+<div class="container">
+    <h1>Modifier le Profil</h1>
+    <div class="input-group mb-3">
+        <span class="input-group-text"> Pseudo</span>
+        <input class="form-control" type="text" readonly value="{{ profil.getpseudo() }}">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text">Role</span>
+        <input class="form-control" type="text" readonly value="{{ profil.getrole() }}">
+    </div>
+    <form method="POST" action="/profil/{{ profil.getpseudo() }}/email">
+        <div class="input-group mb-3">
+            <span class="input-group-text"> nouvel Email</span>
+            <input required type="email" class="form-control" name="email" value={{ profil.getemail() }}>
+            <input type="hidden" name="nameToken" value="{{ token.nameToken }}">
+            <input type="hidden" name="token" value="{{ token.token }}">
+            <input type="submit" class="btn btn-outline-secondary" value="modifier">
+        </div>
+    </form>
+    <form method="POST" action="/profil/{{ profil.getpseudo() }}/password">
+        <div class="input-group mb-3">
+            <span class="input-group-text"> nouveau mot de passe</span>
+            <input required type="password" class="form-control" name="password">
+            <span class="input-group-text"> confirmation</span>
+            <input required type="password" class="form-control" name="confirmPassword">
+            <input type="hidden" name="nameToken" value="{{ token.nameToken }}">
+            <input type="hidden" name="token" value="{{ token.token }}">
+            <input type="submit" class="btn btn-outline-secondary" value="modifier">
+        </div>
+    </form>
+    <form method="POST" action="/profil/{{ profil.getpseudo() }}/remove">
+        <div class="input-group mb-3">
+            <span class="input-group-text text-danger"> Supprimer votre compte ?</span>
+            <input class="form-control" required type="text" name="pseudoConfirm" placeHolder="insérer votre pseudo pour confirmer">
+            <input type="hidden" name="nameToken" value="{{ token.nameToken }}">
+            <input type="hidden" name="token" value="{{ token.token }}">
+            <input type="submit" class="btn btn-danger" value="supprimer">
+        </div>
+    </form>
+    {% if message is defined %}
+    <div class="alert alert-{{ message.type }}" role="alert">
+        {{ message.message }}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

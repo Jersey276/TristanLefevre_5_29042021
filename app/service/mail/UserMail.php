@@ -10,9 +10,18 @@ class UserMail
 	 * Send mail for valid email
 	 * @param string sender mail
 	 * @param string token to send
+	 * @param bool check is you send a welcome mail or a mail for report mail address change
 	 */
-	function checkEmailMail($email, $token)
+	function checkEmailMail($email, $token, $isonlyChange = false)
 	{
+
+        if ($isonlyChange) {
+			(new MailManager())->sendmail(
+				$email,
+				"Changement d'adresse mail"
+				,"vous avez modifié votre adresse mail. /r/n voici un lien pour valider votre email : <a href='" . filter_input(INPUT_SERVER, 'SERVER_NAME') .'/login/'. $token . "'>changer mon mot de passe<a>"
+			);
+        }
 		(new MailManager())->sendmail(
 			$email,
 			"Bienvenue sur " . filter_input(INPUT_SERVER, 'SERVER_NAME')

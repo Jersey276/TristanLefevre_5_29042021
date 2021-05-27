@@ -9,13 +9,19 @@ use app\service\query\AuthQuery;
 
 use core\auth\AuthentificationManager as AuthManager;
 use app\App;
+use app\model\User;
+use app\service\check\UserCheck;
+use app\service\query\UserQuery;
+use core\auth\roleChecker;
+use core\database\DeleteQuery;
+use core\manager\AbstractManager;
 
 /**
  * Manager of all function about User class (Authentification / profil modification)
  * @author Tristan
  * @version 1
  */
-class UserManager
+class UserManager extends AbstractManager
 {
     /**
      * AuthManager instance
@@ -24,9 +30,10 @@ class UserManager
 
     public function __construct()
     {
-        $this->auth = AuthManager::getInstance(App::getDB());
+        parent::__construct(App::getDB());
+        $this->auth = AuthManager::getInstance($this->database);
     }
-
+    // Authentification System
     /**
      * Check all data, register new user and send mail for confirm email
      * @return array array of result with all var for template
@@ -138,7 +145,7 @@ class UserManager
         $post = (new AuthCheck())->changePasswordCheck();
         if (empty($post['err'])) {
             $query = new AuthQuery();
-            $token = (App::getDB())->prepare(
+            $token = $this->database->prepare(
                 $query->getTokenQuery(),
                 [ ":token" => $keyToken],
                 "select",
@@ -174,7 +181,7 @@ class UserManager
      */
     public function changePasswordForm($keyToken)
     {
-        $token = (App::getDB())->prepare(
+        $token = $this->database->prepare(
             (new AuthQuery())->getTokenQuery(),
             [':token' => $keyToken],
             "select",
@@ -201,7 +208,7 @@ class UserManager
      */
     public function validEmail($keyToken)
     {
-        $token = (App::getDB())->prepare(
+        $token = $this->database->prepare(
             (new AuthQuery())->getTokenQuery(),
             [':token' => $keyToken],
             "select",
@@ -223,6 +230,136 @@ class UserManager
             'btnMessage' => "retour à l'acceuil"];
     }
 
+    // user profile display/modification
+    /**
+     * get user profile
+     */
+    public function getUser($pseudo)
+    {
+        $user = (new User())->hydrate(
+            $this->database->prepare(
+                (new UserQuery())
+                ->getUserByPseudo(),
+                [':pseudo' => $pseudo],
+                "select",
+                "app\model\user",
+                true
+            )
+        );
+        return ['profil' => $user , 'token' => $this->askNewCSRFLongToken('profil')];
+    }
+
+    /**
+     * modify user profile
+     * @param string pseudo of user
+     */
+    public function modifyEmail($pseudo)
+    {
+        if (roleChecker::role('Admin') ||
+            roleChecker::role('User') &&
+            $this->request->session('pseudo') == $pseudo) {
+            $user = (new User())->hydrate(
+                $this->database->prepare(
+                    (new UserQuery())->getUserByPseudo(),
+                    [':pseudo' => $pseudo ],
+                    'select',
+                    'app\model\user',
+                    true
+                )
+            );
+            $post = (new UserCheck())->changeEmailCheck();
+            if ($post != false) {
+                $this->database->prepare(
+                    (new UserQuery())->changeEmail(),
+                    [':email' => $post['email'], ':pseudo' => $pseudo],
+                    'update'
+                );
+                if ($post['email'] != $user->getemail()) {
+                    $token = $this->auth->askToken('email', $user->getidUser());
+                    (new UserMail())->checkEmailMail($post['email'], $token, true);
+                    return [
+                'result' => true,
+                'message' => 'votre adresse mail a été change et doit être vérifié. un mail vous a été envoyé'
+            ];
+                }
+                return [
+                'result' => true,
+                'message' => "L'adresse mail n'a pas changé"
+            ];
+            }
+            return [
+            'result' => false,
+            'message' => 'Une erreur à eu lieu, veuiller recommencer'
+        ];
+        }
+        return [
+        'result' => false,
+        'message' => "Bien essayé, mais l'utilisateur que vous voulez modifier l'adresse mail n'est pas vous"
+    ];
+    }
+
+
+    /**
+     * change password and notify user of change
+     * @param string pseudo of user
+     * @param
+     */
+    public function changeProfilPassword($pseudo)
+    {
+        if (roleChecker::role('Admin') ||
+            roleChecker::role('User') &&
+            $this->request->session('pseudo') == $pseudo) {
+            $post = (new UserCheck())->changePasswordCheck();
+            if (empty($post['result'])) {
+                $password = password_hash($post['password'], PASSWORD_BCRYPT);
+                $this->database->prepare(
+                    (new UserQuery())->changePassword(),
+                    [':password' => $password, ':pseudo' => $pseudo],
+                    'update'
+                );
+                return [
+                    'result' => true,
+                    'message' => "Le mot de passe à bien été mis à jour"
+                ];
+            }
+            return [
+                'result' => false,
+                'message' => $post['message']
+            ];
+        }
+        return [
+            'result' => false,
+            'message' => "Bien essayé, mais l'utilisateur que vous voulez modifier le mot de passe n'est pas vous"
+        ];
+    }
+
+    public function removeProfil($pseudo)
+    {
+        if (roleChecker::role('Admin') ||
+            roleChecker::role('User') &&
+            $this->request->session('pseudo') == $pseudo) {
+            $post = (new UserCheck())->RemoveProfilCheck();
+            if (empty($post['result'])) {
+                $this->database->prepare(
+                    (new UserQuery())->deleteProfil(),
+                    [':pseudo' => $post['pseudoConfirm']],
+                    'delete'
+                );
+                $this->request->killSession();
+                return [
+                    'result' => true
+                ];
+            }
+            return [
+                    'result' => false,
+                    'message' => $post['message']
+                ];
+        }
+        return [
+                'result' => false,
+                'message' => "Bien essayé, mais l'utilisateur que vous voulez supprimer n'est pas vous"
+            ];
+    }
     //generic Function
     /**
      * get new CSRF Token
