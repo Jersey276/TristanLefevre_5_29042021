@@ -233,6 +233,8 @@ class UserManager extends AbstractManager
     // user profile display/modification
     /**
      * get user profile
+     * @param string Pseudo of user
+     * @return array information with CSRF token
      */
     public function getUser($pseudo)
     {
@@ -250,8 +252,9 @@ class UserManager extends AbstractManager
     }
 
     /**
-     * modify user profile
+     * check date, modify user mail, ask email confirm token and send mail of email confirmation
      * @param string pseudo of user
+     * @return array result with message
      */
     public function modifyEmail($pseudo)
     {
@@ -302,7 +305,7 @@ class UserManager extends AbstractManager
     /**
      * change password and notify user of change
      * @param string pseudo of user
-     * @param
+     * @return array result with message
      */
     public function changeProfilPassword($pseudo)
     {
@@ -333,6 +336,11 @@ class UserManager extends AbstractManager
         ];
     }
 
+    /**
+     * check data, remove profil and kill session
+     * @param string pseudo of user
+     * @return array result with message
+     */
     public function removeProfil($pseudo)
     {
         if (roleChecker::role('Admin') ||
@@ -358,6 +366,94 @@ class UserManager extends AbstractManager
         return [
                 'result' => false,
                 'message' => "Bien essayé, mais l'utilisateur que vous voulez supprimer n'est pas vous"
+            ];
+    }
+
+    /**
+     * get List of user
+     * @return array users list
+     */
+    public function getListUser()
+    {
+        $users = $this->database->prepare(
+            (new UserQuery())->getListUser(),
+            [],
+            'select',
+            'app\model\User'
+        );
+        return [ 'users' => $users ];
+    }
+
+    /**
+     * check data and modify userRole
+     * @param string pseudo of user
+     * @return array result with message
+     */
+    public function changeRole($pseudo)
+    {
+        if (roleChecker::role('Admin')) {
+            $post = (new UserCheck())->changeRoleCheck();
+            if (empty($post['result'])) {
+                $this->database->prepare(
+                    (new UserQuery())->changeRole(),
+                    [':idRole' => $post['role'], ':pseudo' => $pseudo],
+                    'update'
+                );
+                return [
+                'result' => true,
+                'message' => "Le Role à bien été mis à jour"
+            ];
+            }
+            return [
+            'result' => false,
+            'message' => $post['message']
+        ];
+        }
+        return [
+        'result' => false,
+        'message' => "Bien essayé, mais vous n'avez pas les droits pour changer ça"
+        ];
+    }
+
+    /**
+     * check data, remove User profil and send message for report ban to user
+     * @param string pseudo of user
+     * @return array result with message
+     */
+    public function removeAdminProfil($pseudo)
+    {
+        if (roleChecker::role('Admin')) {
+            $user = (new User())->hydrate(
+                $this->database->prepare(
+                    (new UserQuery())
+                    ->getUserByPseudo(),
+                    [':pseudo' => $pseudo],
+                    "select",
+                    "app\model\user",
+                    true
+                )
+            );
+
+            $post = (new UserCheck())->RemoveProfilAdminCheck();
+            if (empty($post['result'])) {
+                $this->database->prepare(
+                    (new UserQuery())->deleteProfil(),
+                    [':pseudo' => $post['pseudo']],
+                    'delete'
+                );
+                (new UserMail())->reportBan($user->getemail(), $post['message']);
+                return [
+                    'result' => true
+                ];
+            }
+            return [
+                    'result' => false,
+                    'message' => $post['message']
+                ];
+        }
+        return [
+                'result' => false,
+                'message' => "Bien essayé, mais vous n'avez pas les droits"
             ];
     }
     //generic Function

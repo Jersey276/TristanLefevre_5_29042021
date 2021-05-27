@@ -45,4 +45,11 @@ $router
     ->get('/admin/post/[i:post]/comment','CommentController', 'adminListComment','Admin')
     ->post('/admin/post/[i:post]/comment/[i:comment]/approuve','CommentController','validComment','Admin')
     ->post('/admin/post/[i:post]/comment/[i:comment]/remove','CommentController','removeComment','Admin')
+
+    ->get('/admin/profil','UserController','adminListProfil','Admin')
+    ->get('/admin/profil/[a:profil]','UserController','adminModifyProfilForm','Admin')
+    ->post('/admin/profil/[a:profil]/email','UserController','adminModifyEmail','Admin')
+    ->post('/admin/profil/[a:profil]/role','UserController','adminModifyRole','Admin')
+    ->get('/admin/profil/[a:profil]/remove','UserController','adminRemoveProfilForm','Admin')
+    ->post('/admin/profil/[a:profil]/remove','UserController','adminRemoveProfil','Admin')
     ->run();
