@@ -5,7 +5,7 @@
 <div class="container">
     <h1>Modifier le Profil</h1>
     <div class="input-group mb-3">
-        <span class="input-group-text"> Pseudo</span>
+        <span class="input-group-text">Pseudo</span>
         <input class="form-control" type="text" readonly value="{{ profil.getpseudo() }}">
     </div>
     <div class="input-group mb-3">
@@ -14,7 +14,7 @@
     </div>
     <form method="POST" action="/profil/{{ profil.getpseudo() }}/email">
         <div class="input-group mb-3">
-            <span class="input-group-text"> nouvel Email</span>
+            <span class="input-group-text">Nouvel Email</span>
             <input required type="email" class="form-control" name="email" value={{ profil.getemail() }}>
             <input type="hidden" name="nameToken" value="{{ token.nameToken }}">
             <input type="hidden" name="token" value="{{ token.token }}">

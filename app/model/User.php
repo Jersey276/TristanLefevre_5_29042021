@@ -14,6 +14,16 @@ class User extends AbstractModel
     private $role;
     private $isEmailChecked;
 
+    //specific functions
+    public function getEditAdminUrl()
+    {
+        return '/admin/profil/'. $this->pseudo;
+    }
+
+    public function getAdminRemoveUrl()
+    {
+        return '/admin/profil/'. $this->pseudo .'/remove';
+    }
     //getter
     public function getidUser()
     {

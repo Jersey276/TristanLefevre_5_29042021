@@ -1,0 +1,42 @@
+{% extends "/admin/adminBase.twig" %}
+{% block active3 %}active
+{% endblock %}
+{% block title %}Admin
+{% endblock %}
+{% block content %}
+	<div class="container">
+		<h1 class="mx-4 text-center">Modifier le Profil</h1>
+		<div class="input-group mb-3">
+			<span class="input-group-text">Pseudo</span>
+			<input class="form-control" type="text" readonly value="{{ profil.getpseudo() }}">
+		</div>
+		<form method="Post" action="/admin/profil/{{profil.getpseudo()}}/role">
+			<div class="input-group mb-3">
+				<label class="input-group-text" for="RoleSelect">Role</label>
+				<select class="form-select" id="roleSelect" name="role">
+					<option {{ User }} value="1">Utilisateur / User</option>
+					<option {{ Writer }} value="2">Ecrivain / Writer</option>
+					<option {{ Admin }} value="3">Administrateur / Admin</option>
+				</select>
+				<input type="hidden" name="nameToken" value="{{ token.nameToken }}">
+				<input type="hidden" name="token" value="{{ token.token }}">
+				<input type="submit" class="btn btn-outline-secondary" value="modifier">
+			</div>
+		</form>
+		<form method="POST" action="/admin/profil/{{ profil.getpseudo() }}/email">
+			<div class="input-group mb-3">
+				<span class="input-group-text">
+					nouvel Email</span>
+				<input required type="email" class="form-control" name="email" value={{ profil.getemail() }}>
+				<input type="hidden" name="nameToken" value="{{ token.nameToken }}">
+				<input type="hidden" name="token" value="{{ token.token }}">
+				<input type="submit" class="btn btn-outline-secondary" value="modifier">
+			</div>
+		</form>
+		{% if message is defined %}
+			<div class="alert alert-{{ message.type }}" role="alert">
+				{{ message.message }}
+			</div>
+		{% endif %}
+	</div>
+{% endblock %}

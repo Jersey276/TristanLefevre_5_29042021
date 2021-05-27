@@ -1,0 +1,41 @@
+{% extends "/admin/adminBase.twig" %}
+{% block active3 %}active
+{% endblock %}
+{% block title %}Admin
+{% endblock %}
+{% block content %}
+	<style>
+		.centered {
+			position: fixed;
+			top: 50%;
+			left: 50%;
+			/* bring your own prefixes */
+			transform: translate(-50%, -50%);
+		}
+	</style>
+	<div class="container">
+		<div class="centered card">
+			<div class="card-header">
+				<h1 class="mx-4 text-center">Supprimer l'utilisateur
+					{{ pseudo }}
+					?</h1>
+			</div>
+			<div class="card-body">
+				<p class="text-danger fw-bold text-center">Supprimer un utilisateur est une opération irréversible</p>
+				<form method="POST" action="/admin/profil/{{ pseudo }}/remove">
+					<label for="message">Message pour le banissement</label>
+					<textarea name="message" class="form-control mb-3"></textarea>
+					<input type="hidden" name="pseudo" value="{{ pseudo }}">
+					<input type="hidden" name="nameToken" value="{{ token.nameToken }}">
+					<input type="hidden" name="token" value="{{ token.token }}">
+					<input type="submit" class="btn btn-danger w-100" value="Supprimer">
+				</form>
+			</div>
+		</div>
+		{% if message is defined %}
+			<div class="alert alert-danger" role="alert">
+				{{ message }}
+			</div>
+		{% endif %}
+	</div>
+{% endblock %}

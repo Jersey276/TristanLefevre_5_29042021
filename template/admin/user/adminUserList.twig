@@ -1,0 +1,24 @@
+{% extends "/admin/adminBase.twig" %}
+{% block active3 %}active{% endblock %}
+{% block title %}Utilisateurs enregistré{% endblock %}
+{% block content %}
+<div class="container">
+    <h1 class="mx-4 text-center">Listes des utilisateurs</h1>
+    <ul class="list-group">
+        {% for user in users %}
+            <li class="list-group-item">
+                <div class="d-flex flex-row">
+                    <div class="flex-grow-1">
+                            <h5>{{ user.getPseudo()}}</h5>
+                            <h6>{{ user.getRole() }}</h6>
+                    </div>
+                    <div class="d-flex flex-column">
+                    <a class="btn btn-warning" href="{{ user.getEditAdminUrl() }}">modifier le profil</a>
+                    <a class="btn btn-danger" href="{{ user.getAdminRemoveUrl() }}">Supprimer</a>
+                    </div>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
