@@ -3,7 +3,7 @@
 namespace core\database;
 
 use \PDO;
-use core\env\dotenv;
+use PDOException;
 
 class DatabaseManager
 {
@@ -14,7 +14,6 @@ class DatabaseManager
 
     public function __construct()
     {
-        (new DotEnv(dirname(__DIR__, 2) . '/.env'))->load();
         $this->db_dns = getenv('DATABASE_DNS');
         $this->db_user = getenv('DATABASE_USER');
         $this->db_pass = getenv('DATABASE_PASSWORD');
@@ -59,8 +58,7 @@ class DatabaseManager
                 default:
                     return true;
             }
-        } catch (Exception $e) {
-            var_dump($e->getmessage());
+        } catch (PDOException $e) {
             return false;
         }
     }

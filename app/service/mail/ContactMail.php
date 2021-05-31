@@ -13,7 +13,7 @@ class ContactMail
 	function contactMail($formData)
 	{
 		(new MailManager())->sendMail(
-			'tristan-lefevre@hotmail.fr', 
+			getenv('ADMIN_EMAIL'), 
 			"contact de ". $formData['name'], 
 			$formData['name']. '('. $formData['email'] . ') vous demande : <br> '. $formData['message']);
 
