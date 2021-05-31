@@ -54,15 +54,15 @@ class PostManager extends AbstractManager
                 $this->query->getArticle(),
                 [':id' => $id],
                 "select",
-                "app\model\Post",
+                null,
                 true
             );
         if ($postStatement != false) {
             $post = (new Post())->hydrate($postStatement);
             $var = ['post' => $post];
             if ($editor) {
-                $roleChecker = new RoleChecker();
-                if ($roleChecker->role("Admin") || $roleChecker->role("Writer") &&
+                $RoleChecker = new RoleChecker();
+                if ($RoleChecker->role("Admin") || $RoleChecker->role("Writer") &&
                 $post->getauthor() == $this->request->session('pseudo')) {
                     $token = $this->request->newCSRFLongToken('post');
                     $var = array_merge($var, ['CSRFToken' => $token]);
@@ -114,7 +114,7 @@ class PostManager extends AbstractManager
                     (new UserQuery())->getUserByPseudo(),
                     ['pseudo' => $this->request->session('pseudo')],
                     "select",
-                    "app\model\User",
+                    null,
                     true
                 )
             );
@@ -160,21 +160,13 @@ class PostManager extends AbstractManager
                 'update'
             );
             return [
-                "result" => true,
-                "var" => [
-                    "type" => "success",
-                    "message" => "l'article a été mis à jour",
-                    "CSRFToken" => $this->asknewCSRFLongToken('post')
-                ]
+                "type" => "success",
+                "message" => "l'article a été mis à jour"
             ];
         }
         return [
-            'result' => false,
-            'var' => [
-                'type' => "danger",
-                "message" => $post['errMessage'],
-                "CSRFToken" => $this->asknewCSRFLongToken('post')
-            ]
+            'type' => "danger",
+            "message" => $post['errMessage']
         ];
     }
 
@@ -195,5 +187,4 @@ class PostManager extends AbstractManager
         }
         return false;
     }
-
 }

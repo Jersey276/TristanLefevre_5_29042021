@@ -16,19 +16,22 @@ use core\manager\AbstractManager;
 class CommentManager extends AbstractManager
 {
     private $query;
+    private $check;
 
     public function __construct()
     {
         parent::__construct((App::getDB()));
         $this->query = new CommentQuery();
+        $this->check = new CommentCheck();
     }
 
     /**
      * get Comment for a post
      * @param int post id
-     * @param bool if request is used for
+     * @param bool if request is used by admin system
+     * @return array approuved comment (with non-approuved comment and token for admin)
      */
-    public function getComment($id, $isAdmin = false)
+    public function getComment(int $id, bool $isAdmin = false) : array
     {
         $approuvedComment = (App::getDB())->prepare(
             $this->query->getApprouveComment(),
@@ -50,7 +53,12 @@ class CommentManager extends AbstractManager
         return $var;
     }
 
-    public function postComment($id)
+    /**
+     * check Comment form data and post it on database
+     * @param int id of post
+     * @return array table with result and var for TwigTemplate
+     */
+    public function postComment(int $id) : array
     {
         $post = (new CommentCheck())->checkNewComment();
         if (empty($post['err'])) {
@@ -94,7 +102,12 @@ class CommentManager extends AbstractManager
         ];
     }
 
-    public function validComment($id)
+    /**
+     * Check valid comment form and valid a comment on database
+     * @param int comment id
+     * @return array table with result and var for TwigTemplate
+     */
+    public function validComment(int $id) : array
     {
         $post = (new CommentCheck())->checkAdminComment();
         if (empty($post['err'])) {
@@ -119,7 +132,13 @@ class CommentManager extends AbstractManager
             ]
         ];
     }
-    public function removeComment($id)
+
+    /**
+     * Check valid comment form and remove a comment from database
+     * @param int comment id
+     * @return array table with result and var for TwigTemplate
+     */
+    public function removeComment(int $id) : array
     {
         $post = (new CommentCheck())->checkAdminComment();
         if (empty($post['err'])) {

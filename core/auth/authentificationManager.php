@@ -2,7 +2,6 @@
 
 namespace core\auth;
 
-use App;
 use core\database\InsertQuery;
 use core\database\SelectQuery;
 use core\database\UpdateQuery;
@@ -24,7 +23,7 @@ class AuthentificationManager
      */
     private $database;
 
-    private function __construct(databaseManager $database)
+    private function __construct(DatabaseManager $database)
     {
         $this->database = $database;
     }
@@ -34,7 +33,7 @@ class AuthentificationManager
      * @param databaseManager database manager for all database related operations
      * @return authentificationManager instance of this class
      */
-    public static function getInstance($database = null)
+    public static function getInstance(DatabaseManager $database = null) : AuthentificationManager
     {
         if (empty(self::$instance)) {
             self::$instance = new authentificationManager($database);
@@ -46,7 +45,7 @@ class AuthentificationManager
      * check if user have remaining try by his IP Adress
      * @return bool result
      */
-    private function checkTry()
+    private function checkTry() : bool
     {
         $request = new RequestManager();
         $try = $this->database->prepare(
@@ -68,7 +67,7 @@ class AuthentificationManager
 
     /**
      * report last try
-     * @return bool validation of process
+     * @return int validation of process
      */
     private function reportTry()
     {
@@ -90,7 +89,7 @@ class AuthentificationManager
      * @param string password
      * @return array result with message in case of connection fail
      */
-    public function login($login, $password)
+    public function login(string $login, string $password) : Array
     {
         if ($this->checkTry()) {
             $query = new SelectQuery('select');
@@ -110,7 +109,7 @@ class AuthentificationManager
                 $statement,
                 [":login" => $login],
                 "select",
-                "\app\model\User",
+                null,
                 true
             );
             if ($account != false && password_verify($password, $account['password'])) {
@@ -141,7 +140,7 @@ class AuthentificationManager
      * @param string email of new user
      * @return mixed result of database request
      */
-    public function register($pseudo, $password, $email)
+    public function register(string $pseudo, string $password, string $email)
     {
         $password =  password_hash($password, PASSWORD_BCRYPT);
         $query = new InsertQuery();
@@ -164,10 +163,9 @@ class AuthentificationManager
      * Create and generate a new token
      * @param string type of token
      * @param string argument to use depending of type (email for password type, idUser for email validation)
-     * @return string token on success
-     * @return false fail
+     * @return string|bool token on success, false if fail
      */
-    public function askToken($type, $arg)
+    public function askToken(string $type, $arg)
     {
         switch ($type) {
             case 'password':
@@ -180,12 +178,12 @@ class AuthentificationManager
                     $statementSearch,
                     [ ":email" => $arg ],
                     "select",
-                    "app\model\user",
+                    null,
                     true
                 );
                 if ($account != false) {
                     $data = [
-                    ':token' => tokenGenerator::strRandom(),
+                    ':token' => TokenGenerator::strRandom(),
                     ':idUser' => $account['idUser'],
                     ':idType' => 1
                     ];
@@ -195,7 +193,7 @@ class AuthentificationManager
                 break;
             case 'email':
                 $data = [
-                    ':token' => tokenGenerator::strRandom(),
+                    ':token' => TokenGenerator::strRandom(),
                     ':idUser' => $arg,
                     ':idType' => 2
                 ];
@@ -213,12 +211,12 @@ class AuthentificationManager
     }
     /**
      * Use token and change user data depending of function
-     * @param token token
-     * @param function type of functions
-     * @param password (to be used only when ou need to change password)
+     * @param string token
+     * @param string type of functions
+     * @param string password (to be used only when ou need to change password)
      * @return bool result of operation
      */
-    public function useToken($token, $function, $password = null)
+    public function useToken(array $token, string $function, string $password = null) : bool
     {
         switch ($function) {
             case 'password':
