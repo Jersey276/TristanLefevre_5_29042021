@@ -2,15 +2,15 @@
 
 namespace core\auth;
 
-class tokenGenerator
+class TokenGenerator
 {
     /**
-     * @param int $lenght : Permet de générer une chaine de caractères aléatoire de 60 caractères par défaut
-     * @return String
+     * @param int length of random string generated
+     * @return String token key
      */
-    public static function strRandom(int $lenght = 60): String
+    public static function strRandom(int $length = 60): String
     {
         $alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        return substr(str_shuffle(str_repeat($alphabet, $lenght)), 0, $lenght);
+        return substr(str_shuffle(str_repeat($alphabet, $length)), 0, $length);
     }
 }

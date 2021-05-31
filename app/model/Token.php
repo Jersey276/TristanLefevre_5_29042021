@@ -55,8 +55,8 @@ class Token extends AbstractModel
 	{
 		$this->tokenType = $tokenType;
 	}
-	public function setcreatedAt()
+	public function setcreatedAt($createdAt)
 	{
-		$this->createdAt = $createdAt();
+		$this->createdAt = $createdAt;
 	}
 }
