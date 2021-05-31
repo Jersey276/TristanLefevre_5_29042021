@@ -13,6 +13,7 @@ class Post extends AbstractModel
     private $chapoPost;
     private $contentPost;
     private $createdAt;
+    private $modifiedAt;
     private $author;
     private $nbComToApprouve;
 
@@ -34,10 +35,14 @@ class Post extends AbstractModel
         return "/admin/post/" . $this->idPost. "/comment";
     }
 
-    public function date()
+    public function newDate()
     {
-        setlocale(LC_ALL, 'fr_FR@euro', 'fr_FR.utf-8', 'fr_FR');
-        return strftime("%A %e %B %Y", strtotime($this->createdAt));
+        return strftime("%A %d %B %G à %H:%I", strtotime($this->createdAt));
+    }
+
+    public function updateDate()
+    {
+        return strftime("%A %d %B %G à %H:%I", strtotime($this->modifiedAt));
     }
 
     //setter
@@ -60,6 +65,10 @@ class Post extends AbstractModel
     public function setcreatedAt($createdAt)
     {
         $this->createdAt = $createdAt;
+    }
+    public function setModifiedAt($modifiedAt)
+    {
+        $this->modifiedAt = $modifiedAt;
     }
     public function setAuthor($author)
     {
@@ -90,6 +99,10 @@ class Post extends AbstractModel
     public function getcreatedAt()
     {
         return $this->createdAt;
+    }
+    public function getmodifiedAt()
+    {
+        return $this->modifiedAt;
     }
     public function getauthor()
     {
