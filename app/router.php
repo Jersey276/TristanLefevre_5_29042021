@@ -9,7 +9,7 @@ use app\controller\PostController;
 use app\controller\CommentController;
 use app\controller\ErrorController;
 use app\controller\UserController;
-use core\auth\roleChecker;
+use core\auth\RoleChecker;
 use core\request\RequestManager;
 
 class Router
@@ -68,17 +68,17 @@ class Router
 
     /**
      * Check if user is still the same, kill session if ip Address is different
-     * @return true|null true if this session is used by same ip address, void if not
+     * @return null|bool null if this session is used by same ip address, bool if not
      */
     public function checkIpAddress()
     {
-        if (!roleChecker::guest()) {
+        if (!RoleChecker::guest()) {
             $request = new RequestManager();
             if ($request->isSetSession('ipAddress') && $request->session('ipAddress') == $request->getIpAddr()) {
                 return null;
             }
             $request->killSession();
-            session_start();
+            return session_start();
         }
     }
     
@@ -91,19 +91,19 @@ class Router
     {
         switch ($rule) {
             case 'Guest':
-                if (!roleChecker::guest()) {
+                if (!RoleChecker::guest()) {
                     return ["result" => false, "code" => 404];
                 }
                 return ["result" => true];
                 break;
             case 'User':
-                if (roleChecker::guest()) {
+                if (RoleChecker::guest()) {
                     return ['result' => false, "code" => 401];
                 }
                 return ['result' => true];
                 break;
             default:
-                if (roleChecker::role($rule)) {
+                if (RoleChecker::role($rule)) {
                     return ['result' => true];
                 }
                 return ['result' => false, "code" => 403];
