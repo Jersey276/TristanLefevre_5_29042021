@@ -12,10 +12,13 @@
 			</div>
 		</div>
 		<div class="card-body">
-			<p class="card-text">{{ string(post.getcontentPost()) }}</p>
+			<p class="card-text">{{ string(post.getcontentPost())|raw }}</p>
 		</div>
-		<div class="card-footer">
-		<p class="card-text">ecrit par {{ post.getauthor() }} le {{ post.date() }}
+		<div class="card-footer row mx-0">
+		<p class="card-text col mb-0">Crée le {{ post.newDate() }}<br>
+			modifié le {{ post.updateDate() }}
+		</p>
+		<p class="card-text col text-end mb-0">de {{ post.getauthor() }} </p>
 		</div>
 	</div>
 		{% if auth('User')%}
