@@ -81,7 +81,7 @@ class UserController extends AbstractController
     {
         $response = (new UserManager('user'))->removeProfil($pseudo);
         if ($response['result']) {
-            return header('Location : /');
+            return header('Location:/');
         }
         $message = [
             'message' => $response['message'],

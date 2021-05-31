@@ -60,7 +60,7 @@ class AuthController extends AbstractController
     {
         $response = (new UserManager('auth'))->login();
         if ($response['result']) {
-            return header('Location:' . "/");
+            return header('Location:/');
         }
         return print_r($this->render("auth/loginForm", $response['errVar']));
     }
