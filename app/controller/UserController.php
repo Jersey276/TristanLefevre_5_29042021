@@ -13,20 +13,26 @@ class UserController extends AbstractController
      * ask data of user and show them on UserProfilForm
      * @param string pseudo of user
      * @param array message and type of alert for bootstrap
-     * @return TwigTemplate template of user profil form
+     * @return TwigTemplate|function template of user profil form, or error
      */
     public function modifyProfilForm($pseudo, $message = null)
     {
-        $response = (new UserManager())->getUser($pseudo);
-        if (isset($message)) {
-            $response['message'] = $message;
+        $response = (new UserManager('user'))->getUser($pseudo);
+        if ($response['profil'] != false) {
+            if (isset($message)) {
+                $response['message'] = $message;
+            }
+            return print_r(
+                $this->render(
+                    'user\UserProfilForm',
+                    $response
+                )
+            );
         }
-        return print_r(
-            $this->render(
-                'user\UserProfilForm',
-                $response
-            )
-        );
+        if ($response['code'] == 404) {
+            return $this->error404();
+        }
+        return $this->error403();
     }
     /**
      * Ask to modify Email, collect and send result message
@@ -36,7 +42,7 @@ class UserController extends AbstractController
      */
     public function changeEmail($pseudo, $isAdmin = false)
     {
-        $response = (new UserManager())->modifyEmail($pseudo);
+        $response = (new UserManager('user'))->modifyEmail($pseudo);
         $message = ['message' => $response['message']];
         if ($response['result']) {
             $message['type'] = 'warning';
@@ -56,7 +62,7 @@ class UserController extends AbstractController
      */
     public function changePassword($pseudo)
     {
-        $response = (new UserManager())->changeProfilPassword($pseudo);
+        $response = (new UserManager('user'))->changeProfilPassword($pseudo);
         $message = ['message' => $response['message']];
         if ($response['result']) {
             $message['type'] = 'success';
@@ -73,7 +79,7 @@ class UserController extends AbstractController
      */
     public function removeProfil($pseudo)
     {
-        $response = (new UserManager())->removeProfil($pseudo);
+        $response = (new UserManager('user'))->removeProfil($pseudo);
         if ($response['result']) {
             return header('Location : /');
         }
@@ -90,7 +96,7 @@ class UserController extends AbstractController
      */
     public function adminListProfil()
     {
-        $response = (new UserManager())->getListUser();
+        $response = (new UserManager('user'))->getListUser();
         return print_r(
             $this->render(
                 'admin\user\adminUserList',
@@ -107,7 +113,7 @@ class UserController extends AbstractController
      */
     public function adminModifyProfilForm($pseudo, $message = null)
     {
-        $response = (new UserManager())->getUser($pseudo);
+        $response = (new UserManager('user'))->getUser($pseudo, true);
         $response[($response['profil'])->getrole()] = 'selected';
         if (isset($message)) {
             $response['message'] = $message;
@@ -127,7 +133,7 @@ class UserController extends AbstractController
      */
     public function adminModifyRole($pseudo)
     {
-        $response = (new UserManager())->changeRole($pseudo);
+        $response = (new UserManager('user'))->changeRole($pseudo);
         $message = ['message' => $response['message']];
         if ($response['result']) {
             $message['type'] = 'success';
@@ -147,7 +153,7 @@ class UserController extends AbstractController
     public function adminRemoveProfilForm($pseudo, $message = null)
     {
         $var = [
-            'token' => (new UserManager())->askNewCSRFLongToken('banUser'),
+            'token' => (new UserManager('user'))->askNewCSRFLongToken('banUser'),
             'pseudo' => $pseudo
         ];
         if (isset($message)) {
@@ -178,9 +184,9 @@ class UserController extends AbstractController
      */
     public function adminRemoveProfil($pseudo)
     {
-        $response = (new UserManager())->removeAdminProfil($pseudo);
+        $response = (new UserManager('user'))->removeAdminProfil($pseudo);
         if ($response['result']) {
-            return header('Location:\admin\user');
+            return header('Location:\admin\profil');
         }
         return $this->adminRemoveProfilForm($pseudo, $response['message']);
     }
