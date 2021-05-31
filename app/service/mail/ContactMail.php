@@ -15,7 +15,7 @@ class ContactMail
 		(new MailManager())->sendMail(
 			'tristan-lefevre@hotmail.fr', 
 			"contact de ". $formData['name'], 
-			$formData['name']. '('. $formData['email'] . ') vous demande : /r/n'. $formData['message']);
+			$formData['name']. '('. $formData['email'] . ') vous demande : <br> '. $formData['message']);
 
 	}
 }
