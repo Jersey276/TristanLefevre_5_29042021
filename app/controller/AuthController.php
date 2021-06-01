@@ -16,7 +16,7 @@ class AuthController extends AbstractController
 {
     /**
      * Show register form
-     * @return Twigtemplate template of register Form with generated CSRF Token
+     * @return TwigTemplate template of register Form with generated CSRF Token
      */
     public function registerForm()
     {
@@ -26,12 +26,11 @@ class AuthController extends AbstractController
 
     /**
      * register new user
-     * @return Twigtemplate template of Message template with message for confirm succes of operation
-     * @return Twigtemplate template of register Form with error message and new CSRF Token in case of fail
+     * @return TwigTemplate template of Message template with message on succes / register Form with error message and new CSRF Token in case of fail
      */
     public function register()
     {
-        $response = (new UserManager())->register();
+        $response = (new UserManager('auth'))->register();
         if ($response['result']) {
             return print_r($this->render("message", $response['messageVar']));
         }
@@ -40,14 +39,14 @@ class AuthController extends AbstractController
 
     /**
      * Show Login form
-     * @return Twigtemplate template of Login Form with generated CSRF Token
+     * @return TwigTemplate template of Login Form with generated CSRF Token
      */
     public function loginForm()
     {
         return print_r(
             $this->render(
                 'auth/loginForm',
-                ['CSRFtoken' => (new UserManager())->getCSRFToken()]
+                ['CSRFtoken' => (new UserManager('auth'))->getCSRFToken()]
             )
         );
     }
@@ -55,20 +54,20 @@ class AuthController extends AbstractController
     /**
      * Ask manager to log in user and show result
      * @return header redirection to homePage
-     * @return Twigtemplate template of login Form with error message and new CSRF Token in case of fail
+     * @return TwigTemplate template of login Form with error message and new CSRF Token in case of fail
      */
     public function login()
     {
-        $response = (new UserManager())->login();
+        $response = (new UserManager('auth'))->login();
         if ($response['result']) {
-            return header('Location:' . "/");
+            return header('Location:/');
         }
         return print_r($this->render("auth/loginForm", $response['errVar']));
     }
 
     /**
      * Show form when user click on 'forgot Password' link
-     * @return Twigtemplate template of Forget Form with generated CSRF Token
+     * @return TwigTemplate template of Forget Form with generated CSRF Token
      */
     public function forgotPasswordForm()
     {
@@ -82,12 +81,11 @@ class AuthController extends AbstractController
 
     /**
      * ask manager to send mail and show result
-     * @return Twigtemplate message page that report to user that a mail with link is send
-     * @return Twigtemplate template of forgotPassword Form with error message and new CSRF Token in case of fail
+     * @return TwigTemplate message page that report to user that a mail with link is send / forgot password form with error message and new CSRF Token in case of fail
      */
     public function forgotPassword()
     {
-        $response = (new UserManager())->forgotPassword();
+        $response = (new UserManager('auth'))->forgotPassword();
         if ($response['result']) {
             return print_r(
                 $this->render(
@@ -107,12 +105,11 @@ class AuthController extends AbstractController
     /**
      * ask manager validity of token and show changepassword Form if success
      * @param string token
-     * @return TwigTemplate template of ChangePassword Form if token is valid
-     * @return header Throw 404 error when token isn't valid
+     * @return TwigTemplate|function template of ChangePassword Form if token is valid / 404 error when token isn't valid
      */
     public function changePasswordForm($token)
     {
-        $response = (new UserManager())->changePasswordForm($token);
+        $response = (new UserManager('auth'))->changePasswordForm($token);
         if ($response['result']) {
             return print_r($this->render('auth/changePasswordForm', $response['var']));
         }
@@ -122,12 +119,11 @@ class AuthController extends AbstractController
     /**
      * Ask manager to change password. Send response depending of success
      * @param string token
-     * @return TwigTemplate message when success
-     * @return TwigTemplate changePasswordForm with new CSRF Token when fail
+     * @return TwigTemplate message when success, change password form with new CSRF Token when fail
      */
     public function changePassword($token)
     {
-        $response = (new UserManager())->changePassword($token);
+        $response = (new UserManager('auth'))->changePassword($token);
         if ($response['result']) {
             return print_r($this->render("message", $response['messageVar']));
         }
@@ -141,7 +137,7 @@ class AuthController extends AbstractController
      */
     public function validEmail($token)
     {
-        $response = (new UserManager())->validEmail($token);
+        $response = (new UserManager('auth'))->validEmail($token);
         return print_r($this->render("message", $response));
     }
 

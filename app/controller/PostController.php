@@ -16,7 +16,7 @@ class PostController extends AbstractController
 {
     /**
      * List all Article
-     * @return template listArticle.twig with reduced information about article
+     * @return TwigTemplate Post List with reduced information about post
      */
     public function listPosts()
     {
@@ -29,9 +29,9 @@ class PostController extends AbstractController
     }
 
     /**
-     * Get one article
-     * @param int article id
-     * @return template article.twig with detailled information about article
+     * Get one post
+     * @param int post id
+     * @return TwigTemplate post with detailled information about post
      */
     public function getPost($id)
     {
@@ -39,7 +39,7 @@ class PostController extends AbstractController
         if ($post['result']) {
             $comment = new CommentManager();
             $post['var']['comments'] = $comment->getcomment($id);
-            if (roleChecker::role('User')) {
+            if (RoleChecker::role('User')) {
                 $post['var']['token'] = $comment->askNewCSRFLongToken('comment');
             }
             return print_r(
@@ -53,8 +53,8 @@ class PostController extends AbstractController
     }
 
     /**
-     * Display empty article form
-     * @return
+     * Display empty post form
+     * @return TwigTemplate
      */
     public function addPostForm()
     {
@@ -67,9 +67,8 @@ class PostController extends AbstractController
     }
 
     /**
-     * Create new article
-     * @return TwigTemplate
-     * @return TwigTemplate form with data
+     * Create new post
+     * @return TwigTemplate list form if success / form with error message
      */
     public function addPost()
     {
@@ -81,7 +80,7 @@ class PostController extends AbstractController
     }
 
     /**
-     * List all article on admin specific page
+     * List all post on admin specific page
      * @return TwigTemplate listPostAdmin list of posts with all button for edit,remove and manage comment
      */
     public function listPostsAdmin()
@@ -95,12 +94,16 @@ class PostController extends AbstractController
     }
 
     /**
-     * Display post form with all data from article
-     * @param int id of article
+     * Display post form with all data from post
+     * @param int id of post
+     * @return TwigTemplate|function template
      */
-    public function modifyPostForm($id)
+    public function modifyPostForm($id, $message = null)
     {
         $post = (new PostManager())->getPost($id, true);
+        if (isset($message)) {
+            $post['var'] = array_merge($post['var'], $message);
+        }
         if ($post['result']) {
             return print_r(
                 $this->render(
@@ -117,23 +120,18 @@ class PostController extends AbstractController
 
     /**
      * Edit one Article
-     * @param int article id
+     * @param int post id
      * @return header redirection
      */
     public function modifyPost($id)
     {
         $response = (new PostManager)->modifyPost($id);
-        return print_r(
-            $this->render(
-                'admin/post/adminPostForm',
-                ($response['var'])
-            )
-        );
+        return $this->modifyPostForm($id, $response);
     }
 
     /**
      * Show message for prevent post removal
-     * @return array with all message data
+     * @return TwigTemplate|function with all message data
      */
     public function removePostForm($id)
     {
@@ -176,8 +174,8 @@ class PostController extends AbstractController
     }
 
     /**
-     * Remove one article
-     * @param int article id
+     * Remove one post
+     * @param int post id
      * @return header redirection to post List
      */
     public function removePost($id)

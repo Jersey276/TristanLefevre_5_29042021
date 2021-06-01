@@ -1,6 +1,11 @@
 <?php
 namespace core\request;
 
+/**
+ * Class for getting all data from $_POST, $_SESSION var and Ip Adress
+ * @author Tristan
+ * @version 3
+ */
 class RequestManager
 {
     /**
@@ -31,6 +36,7 @@ class RequestManager
         }
         return $posts;
     }
+
     /**
      * Verify validity of a data and prepare it
      * @param mixed variable to check
@@ -49,7 +55,7 @@ class RequestManager
             //check int and clean it
             case "int":
                 if (filter_var($data, FILTER_VALIDATE_INT)) {
-                    return filter_var($data,FILTER_SANITIZE_NUMBER_INT);
+                    return filter_var($data, FILTER_SANITIZE_NUMBER_INT);
                 }
                 return false;
                 break;
@@ -59,7 +65,7 @@ class RequestManager
                 break;
             //check return string without html, js and sql effect
             case "string":
-                return htmlentities($data, ENT_QUOTES);
+                return nl2br(htmlentities($data, ENT_QUOTES));
                 break;
             //check CSRF token
             case "token":
@@ -67,6 +73,7 @@ class RequestManager
                 break;
         }
     }
+
     /**
      * get/set Session Variable
      * @param string session variable name
@@ -80,6 +87,7 @@ class RequestManager
         }
         return $_SESSION[$key];
     }
+
     /**
      * Verify if this session variable exist
      * @return bool result of array key exists
@@ -88,6 +96,7 @@ class RequestManager
     {
         return array_key_exists($key, $_SESSION);
     }
+
     /**
      * unset a session var
      */
@@ -95,6 +104,7 @@ class RequestManager
     {
         unset($_SESSION[$varName]);
     }
+
     /**
      * kill session
      * @return bool result of session destroy
@@ -103,6 +113,7 @@ class RequestManager
     {
         return session_destroy();
     }
+
     /**
      * Generate and assign new CSRF Token
      * @return string token
@@ -114,6 +125,7 @@ class RequestManager
         $this->session('token_time', time());
         return $token;
     }
+
     /**
      * Generate and assign new CSRF long Token
      * @param string function of this token
@@ -127,6 +139,7 @@ class RequestManager
         $this->session($nameToken, ['token' => $token, 'token_time' => $time]);
         return ["nameToken" => $nameToken, "token" => $token ];
     }
+
     /**
      * Verify CSRF Token
      * @param string csrf token

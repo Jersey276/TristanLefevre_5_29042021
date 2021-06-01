@@ -16,7 +16,7 @@ class PostQuery
     public function getAllArticles()
     {
         return (new SelectQuery)
-            ->select('post.idPost', 'post.titlePost', 'post.chapoPost', 'post.createdAt', 'user.pseudo as author')
+            ->select('post.idPost', 'post.titlePost', 'post.chapoPost', 'post.createdAt', 'post.modifiedAt', 'user.pseudo as author')
             ->from('post')
             ->leftJoin('user', 'user.idUser = post.idUser')
             ->where(1)
@@ -27,7 +27,7 @@ class PostQuery
     public function AdminGetAllArticle()
     {
         return (new SelectQuery)
-            ->select('post.idPost', 'post.titlePost', 'post.chapoPost', 'post.createdAt', 'user.pseudo as author',)
+            ->select('post.idPost', 'post.titlePost', 'post.chapoPost', 'post.createdAt', 'post.modifiedAt', 'user.pseudo as author',)
             ->from('post')
             ->leftJoin('user', 'user.idUser = post.idUser')
             ->leftJoin('comment','comment.idPost = post.idPost')
@@ -49,6 +49,7 @@ class PostQuery
                 'post.titlePost',
                 'post.chapoPost',
                 'post.contentPost',
+                'post.modifiedAt',
                 'post.createdAt',
                 'user.pseudo as author'
             )
@@ -67,6 +68,7 @@ class PostQuery
             'post.titlePost',
             'post.chapoPost',
             'post.createdAt',
+            'post.modifiedAt',
             'user.pseudo as author',
             'COUNT(CASE WHEN comment.isApprouved=0 THEN 1 END) as nbComToApprouve'
         )
@@ -86,6 +88,7 @@ class PostQuery
             'post.titlePost',
             'post.chapoPost',
             'post.createdAt',
+            'post.modifiedAt',
             'user.pseudo as author',
             'COUNT(CASE WHEN comment.isApprouved=0 THEN 1 END) as nbComToApprouve'
             )
@@ -111,7 +114,8 @@ class PostQuery
         ->set(
             "titlePost = :titlePost",
             "chapoPost = :chapoPost",
-            "contentPost = :contentPost"
+            "contentPost = :contentPost",
+            'modifiedAt = NOW()',
         )
         ->where("idPost = :id")
         ->toString();

@@ -2,5 +2,14 @@
 {% block active1 %}active{% endblock %}
 {% block title %}Admin{% endblock %}
 {% block content %}
-admin
+<div class="centered text-center">
+    <h1> Bienvenue sur l'interface d'administration </h1>
+    <div class="d-flex flex-row justify-content-around">
+        <a class="btn btn-secondary p-3" href="/admin/post/add">Ajouter un article</a>
+        <a class="btn btn-secondary p-3" href="/admin/post">Consulter les article</a>
+        {% if auth('Admin')%}
+            <a class="btn btn-secondary p-3" href="/admin/profil">Gérer les utilisateurs</a>
+        {% endif %}
+    </div>
+</div>
 {% endblock %}

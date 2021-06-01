@@ -1,8 +1,8 @@
 {% extends "/admin/adminBase.twig" %}
 {% block active2 %}active{% endblock %}
-{% block title %}Admin - {{ pageTitle }}{% endblock %}
+{% block title %}Admin - Nouvel Article{{ pageTitle }}{% endblock %}
 {% block content %}
-<div class="container">
+<div class="container d-flex flex-column">
 	<div class="alert alert-{{ type }}">
 		{{ message }}
 	</div>
@@ -19,7 +19,7 @@
 		</div>
 		<div class="form-group">
 			<label for="contentPost">Contenu de l'article</label>
-			<textarea class="form-control" name="contentPost" rows="20">{{ string(post.getcontentPost()) }}</textarea>
+			<textarea class="form-control" name="contentPost" rows="20">{{ string(post.getcontentPost(), true)|raw }}</textarea>
 		{% else %}
 	<h1> Créer un nouvel article </h1>
 	<form method='POST' action='\admin\post\add'>
@@ -38,7 +38,7 @@
 		</div>
 		<input type="hidden" name="nameToken" value='{{ CSRFToken.nameToken }}'>
 		<input type="hidden" name="CSRFtoken" value='{{ CSRFToken.token }}'>
-		<button type="submit" class ="btn btn-primary">Confirmer</button>
+		<button type="submit" class ="btn btn-primary my-3 w-100">Confirmer</button>
 	</form>
 </div>
 {% endblock %}

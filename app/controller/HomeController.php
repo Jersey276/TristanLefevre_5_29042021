@@ -5,6 +5,7 @@ namespace app\controller;
 use core\controller\AbstractController;
 use app\service\mail\ContactMail;
 use core\request\requestManager as RequestManager;
+use app\manager\UserManager;
 
 /**
  * Controller of home page, contact form and admin home page
@@ -18,7 +19,13 @@ class HomeController extends AbstractController
      * @return TwigTemplate home page
      */
     function home() {
-        return print_r($this->render("home"));
+        $token = (new UserManager())->askNewCSRFLongToken('contact') ;
+        return print_r(
+            $this->render(
+                "home",
+                ['token' => $token]
+            )
+        );
     }
     
     /**
@@ -49,7 +56,9 @@ class HomeController extends AbstractController
         $formData = $request->getPost([
             "name" => "string",
             "email" => "string|email",
-            "message" => "string"
+            "message" => "string",
+            "token" => "longToken",
+            "nameToken" => "string"
         ]);
         if ($formData != false) 
         {
