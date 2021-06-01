@@ -13,10 +13,10 @@ This website on is 1.0 version is composed of a post system with comment and use
 ## Content
 
 This project contains basic functionnality of a blog website such has
--  Authentification system
--  Post system
--  Comment for post
--  User Management system
+-   Authentification system
+-   Post system
+-   Comment for post
+-   User Management system
 
  ![Arborescence du site](https://user-images.githubusercontent.com/83149814/120319381-3d7d8b00-c2e1-11eb-9193-bcc59f33d991.png)
 
