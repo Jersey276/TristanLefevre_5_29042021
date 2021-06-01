@@ -2,8 +2,6 @@
 
 namespace app\model;
 
-use core\database\databaseManager;
-use core\database\selectQuery;
 use core\model\AbstractModel;
 
 class Post extends AbstractModel
