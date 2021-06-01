@@ -2,7 +2,7 @@
 
 namespace core\auth;
 
-use core\request\requestManager;
+use core\request\RequestManager;
 
 /**
  * class for check if user role can use a function

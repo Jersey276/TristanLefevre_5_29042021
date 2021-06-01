@@ -9,6 +9,8 @@ This website on is 1.0 version is composed of a post system with comment and use
 1.  get all file from this branch
 2.  Collect all composer dependencies with `composer require` and press enter
 3.  Config your website with .env files with all needed data for work (see .env.example for create your own .env file)
+4.  Install table on existant Database with sql file provided on Database folder
+
 
 ## Content
 
