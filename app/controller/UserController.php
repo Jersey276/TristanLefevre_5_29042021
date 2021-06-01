@@ -3,7 +3,6 @@
 namespace app\controller;
 
 use app\manager\UserManager;
-use app\model\User;
 use core\controller\AbstractController;
 
 class UserController extends AbstractController
