@@ -2,7 +2,7 @@
 {% block active2 %}active{% endblock %}
 {% block title %}Admin - Nouvel Article{{ pageTitle }}{% endblock %}
 {% block content %}
-<div class="container">
+<div class="container d-flex flex-column">
 	<div class="alert alert-{{ type }}">
 		{{ message }}
 	</div>
@@ -38,7 +38,7 @@
 		</div>
 		<input type="hidden" name="nameToken" value='{{ CSRFToken.nameToken }}'>
 		<input type="hidden" name="CSRFtoken" value='{{ CSRFToken.token }}'>
-		<button type="submit" class ="btn btn-primary">Confirmer</button>
+		<button type="submit" class ="btn btn-primary my-3 w-100">Confirmer</button>
 	</form>
 </div>
 {% endblock %}

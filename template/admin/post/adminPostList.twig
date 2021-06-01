@@ -29,15 +29,17 @@
 												<h5>{{ myPost.gettitlePost()}}</h5>
 											</a>
 										</div>
-										{% if auth('Admin') %}
-											<a class="btn btn-contact" href="{{ myPost.getCommentUrl() }}">commentaires
-												{% if myPost.getnbComToApprouve > 0 %}
-													<span class="badge bg-contact rounded-pill">{{ myPost.getnbComToApprouve }}</span>
-												{% endif %}
-											</a>
-										{% endif %}
-										<a class="btn btn-warning" href="{{ myPost.getEditUrl() }}">Modifier</a>
-										<a class="btn btn-danger" href="{{ myPost.getRemoveUrl() }}">Supprimer</a>
+										<div>
+											{% if auth('Admin') %}
+												<a class="btn btn-contact" href="{{ myPost.getCommentUrl() }}">commentaires
+													{% if myPost.getnbComToApprouve > 0 %}
+														<span class="badge bg-contact rounded-pill">{{ myPost.getnbComToApprouve }}</span>
+													{% endif %}
+												</a>
+											{% endif %}
+											<a class="btn btn-warning" href="{{ myPost.getEditUrl() }}">Modifier</a>
+											<a class="btn btn-danger" href="{{ myPost.getRemoveUrl() }}">Supprimer</a>
+										</div>
 									</div>
 								</li>
 							{% endfor %}
