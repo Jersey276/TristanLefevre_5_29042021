@@ -4,6 +4,7 @@
 {% block title %}Articles{% endblock %}
 {% block content %}
 <div class="container">
+	<h1 class="text-center">Mes articles</h1>
 	<div class="list-group">
 		{% for post in posts %}
 			<a href="{{ string(post.getDisplayUrl()) }}" class="list-group-item list-group-item-action">

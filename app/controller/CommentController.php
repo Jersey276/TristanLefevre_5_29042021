@@ -18,7 +18,7 @@ class CommentController extends AbstractController
      * @param int post id
      * @return TwigTemplate message with variable of result
      */
-    public function postComment($id)
+    public function postComment(int $id)
     {
         $response = (new CommentManager())->postComment($id);
         return print_r(
@@ -29,30 +29,48 @@ class CommentController extends AbstractController
         );
     }
 
-	public function adminListComment($post, $message = null)
-	{
-		$response = (new CommentManager())->getComment($post,true);
-		if ($message != null)
-		{
-			$response['message'] = $message;
-		}
-		return print_r(
-			$this->render(
-				'admin/post/adminPostComment',
-				$response
-			)
-		);
-	}
+    /**
+     * List all comment from article
+     * @param int id of post
+     * @param array message with his type if this
+     * function is used by another
+     * @return TwigTemplate admin comment list from a post
+     */
+    public function adminListComment(int $post, string $message = null)
+    {
+        $response = (new CommentManager())->getComment($post, true);
+        if ($message != null) {
+            $response['message'] = $message;
+        }
+        return print_r(
+            $this->render(
+                'admin/post/adminPostComment',
+                $response
+            )
+        );
+    }
 
-	public function validComment($post, $comment)
-	{
-		$response = (new CommentManager())->validComment($comment);
-		$this->adminListComment($post, $response['message']);
-	}
+    /**
+     * Valid a comment
+     * @param int post id
+     * @param int comment id
+     * @return function reload admin list comment with message
+     */
+    public function validComment(int $post, int $comment)
+    {
+        $response = (new CommentManager())->validComment($comment);
+        $this->adminListComment($post, $response['message']);
+    }
 
-	public function removeComment($post, $comment)
-	{
-		$response = (new CommentManager())->removeComment($comment);
-		$this->adminListComment($post, $response['message']);
-	}
+    /**
+     * Remove a comment
+     * @param int post id
+     * @param int comment id
+     * @return function reload admin list comment with message
+     */
+    public function removeComment(int $post, int $comment)
+    {
+        $response = (new CommentManager())->removeComment($comment);
+        $this->adminListComment($post, $response['message']);
+    }
 }

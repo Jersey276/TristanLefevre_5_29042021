@@ -2,7 +2,6 @@
 
 namespace app\manager;
 
-use core\request\RequestManager;
 use app\service\check\AuthCheck;
 use app\service\mail\UserMail;
 use app\service\query\AuthQuery;
@@ -12,35 +11,77 @@ use app\App;
 use app\model\User;
 use app\service\check\UserCheck;
 use app\service\query\UserQuery;
-use core\auth\roleChecker;
-use core\database\DeleteQuery;
+use core\auth\RoleChecker;
 use core\manager\AbstractManager;
 
 /**
  * Manager of all function about User class (Authentification / profil modification)
  * @author Tristan
- * @version 1
+ * @version 3
  */
 class UserManager extends AbstractManager
 {
     /**
-     * AuthManager instance
+     * @var AuthManager instance
      */
     private $auth;
 
-    public function __construct()
+    /**
+     * @var AuthQuery authQuery
+     */
+    private $authQuery;
+
+    /**
+     * @var UserQuery userQuery
+     */
+    private $userQuery;
+
+    /**
+     * @var AuthCheck authCheck
+     */
+    private $authCheck;
+
+    /**
+     * @var UserCheck userCheck
+     */
+    private $userCheck;
+
+    /**
+     * @var UserMail userMail
+     */
+    private $userMail;
+
+    /**
+     * constructor
+     * @param bool check if user if for Auth
+     */
+    public function __construct($function = null)
     {
         parent::__construct(App::getDB());
-        $this->auth = AuthManager::getInstance($this->database);
+        switch ($function) {
+            case ('auth'):
+                $this->authQuery = new AuthQuery();
+                $this->authCheck = new AuthCheck();
+                break;
+            case ('user'):
+                $this->userQuery = new UserQuery();
+                $this->userCheck = new UserCheck();
+                break;
+        }
+        if ($function != null) {
+            $this->userMail = new UserMail();
+            $this->auth = AuthManager::getInstance($this->database);
+        }
     }
+
     // Authentification System
     /**
      * Check all data, register new user and send mail for confirm email
      * @return array array of result with all var for template
      */
-    public function register()
+    public function register() : array
     {
-        $post = (new AuthCheck)->registerCheck();
+        $post = $this->authCheck->registerCheck();
         if (empty($post['err'])) {
             $awnser = $this->auth->register(
                 $post["pseudo"],
@@ -49,7 +90,7 @@ class UserManager extends AbstractManager
             );
             if ($awnser != false) {
                 $token = $this->auth->askToken("email", $awnser);
-                (new UserMail())->checkEmailMail($post['email'], $token);
+                $this->userMail->checkEmailMail($post['email'], $token);
                 return [
                     "result" => true,
                     "messageVar" => [
@@ -76,9 +117,9 @@ class UserManager extends AbstractManager
      * Check all data and verify if user can be logged
      * @return array array of result with all var for template
      */
-    public function login()
+    public function login() : array
     {
-        $post = (new AuthCheck())->loginCheck();
+        $post = $this->authCheck->loginCheck();
 
         if (empty($post['err'])) {
             $awnser = $this->auth->login($post['pseudo'], $post["password"]);
@@ -108,13 +149,13 @@ class UserManager extends AbstractManager
      * Check Email and send mail with link for change password
      * @return array array of result with all var for template
      */
-    public function forgotpassword()
+    public function forgotPassword() : array
     {
-        $post = (new AuthCheck)->forgotPasswordCheck();
+        $post = $this->authCheck->forgotPasswordCheck();
         if (empty($post['err'])) {
             $token = $this->auth->askToken("password", $post['email']);
             if ($token != false) {
-                (new UserMail())->resetPassword($post['email'], $token);
+                $this->userMail->resetPassword($post['email'], $token);
                 return [
                     'result' => true,
                     'messageVar' => [
@@ -125,6 +166,7 @@ class UserManager extends AbstractManager
                     ]
                 ];
             }
+            $post['errMessage'] = "Un problème a eu lieu lors de l'envoi du message";
         }
         return [
             'result' => false,
@@ -140,9 +182,9 @@ class UserManager extends AbstractManager
      * @param string token
      * @return array array of result with all var for template
      */
-    public function changePassword($keyToken)
+    public function changePassword($keyToken) : array
     {
-        $post = (new AuthCheck())->changePasswordCheck();
+        $post = $this->authCheck->changePasswordCheck();
         if (empty($post['err'])) {
             $query = new AuthQuery();
             $token = $this->database->prepare(
@@ -179,10 +221,10 @@ class UserManager extends AbstractManager
      * @param string token
      * @return array array of result with all var for template
      */
-    public function changePasswordForm($keyToken)
+    public function changePasswordForm($keyToken) : array
     {
         $token = $this->database->prepare(
-            (new AuthQuery())->getTokenQuery(),
+            $this->authQuery->getTokenQuery(),
             [':token' => $keyToken],
             "select",
             "app\model\Token",
@@ -206,26 +248,28 @@ class UserManager extends AbstractManager
      * use token to validate email
      * @return array array of result with all var for template
      */
-    public function validEmail($keyToken)
+    public function validEmail($keyToken) : array
     {
         $token = $this->database->prepare(
-            (new AuthQuery())->getTokenQuery(),
+            $this->authQuery->getTokenQuery(),
             [':token' => $keyToken],
             "select",
             "token",
             true
         );
-        if ($this->auth->useToken($token, "email")) {
+        if ($token != false && $this->auth->useToken($token, "email")) {
             return [
                 'type' => 'success',
-                'message' => 'Votre adresse mail a été vérifié, vous pouvez vous connecter',
+                'message' => 'Votre adresse mail a été vérifié, 
+                vous pouvez vous connecter',
                 'btnReturn' => '\login',
                 'btnMessage' => "se connecter"
             ];
         }
         return [
             'type' => 'danger',
-            'message' => 'une erreur à eu lieu lors de la validation de l\' adresse mail',
+            'message' => 'une erreur à eu lieu lors de la validation 
+            de l\' adresse mail',
             'brnReturn' => '\\',
             'btnMessage' => "retour à l'acceuil"];
     }
@@ -236,53 +280,65 @@ class UserManager extends AbstractManager
      * @param string Pseudo of user
      * @return array information with CSRF token
      */
-    public function getUser($pseudo)
+    public function getUser($pseudo, $isAdmin = false) : array
     {
-        $user = (new User())->hydrate(
-            $this->database->prepare(
-                (new UserQuery())
-                ->getUserByPseudo(),
-                [':pseudo' => $pseudo],
-                "select",
-                "app\model\user",
-                true
-            )
+        $userQuery = $this->database->prepare(
+            $this->userQuery
+            ->getUserByPseudo(),
+            [':pseudo' => $pseudo],
+            "select",
+            "app\model\user",
+            true
         );
-        return ['profil' => $user , 'token' => $this->askNewCSRFLongToken('profil')];
+        if (!empty($userQuery)) {
+            $user = (new User())->hydrate($userQuery);
+            if ($user->getpseudo() != $this->request->session('pseudo')) {
+                if (!$isAdmin) {
+                    return ['profil' => false, "code" => 403];
+                }
+            }
+            return [
+                'profil' => $user ,
+                'token' => $this->askNewCSRFLongToken('profil')
+            ];
+        }
+        return ['profil' => false, "code" => 404];
     }
 
     /**
-     * check date, modify user mail, ask email confirm token and send mail of email confirmation
+     * check user role, modify user mail, ask email confirm token
+     * and send mail of email confirmation
      * @param string pseudo of user
      * @return array result with message
      */
-    public function modifyEmail($pseudo)
+    public function modifyEmail($pseudo) : array
     {
-        if (roleChecker::role('Admin') ||
-            roleChecker::role('User') &&
+        if (RoleChecker::role('Admin') ||
+            RoleChecker::role('User') &&
             $this->request->session('pseudo') == $pseudo) {
             $user = (new User())->hydrate(
                 $this->database->prepare(
-                    (new UserQuery())->getUserByPseudo(),
+                    $this->userQuery->getUserByPseudo(),
                     [':pseudo' => $pseudo ],
                     'select',
                     'app\model\user',
                     true
                 )
             );
-            $post = (new UserCheck())->changeEmailCheck();
+            $post = $this->userCheck->changeEmailCheck();
             if ($post != false) {
                 $this->database->prepare(
-                    (new UserQuery())->changeEmail(),
+                    $this->userQuery->changeEmail(),
                     [':email' => $post['email'], ':pseudo' => $pseudo],
                     'update'
                 );
                 if ($post['email'] != $user->getemail()) {
                     $token = $this->auth->askToken('email', $user->getidUser());
-                    (new UserMail())->checkEmailMail($post['email'], $token, true);
+                    $this->userMail->checkEmailMail($post['email'], $token, true);
                     return [
                 'result' => true,
-                'message' => 'votre adresse mail a été change et doit être vérifié. un mail vous a été envoyé'
+                'message' => 'votre adresse mail a été change 
+                et doit être vérifié. un mail vous a été envoyé'
             ];
                 }
                 return [
@@ -297,7 +353,8 @@ class UserManager extends AbstractManager
         }
         return [
         'result' => false,
-        'message' => "Bien essayé, mais l'utilisateur que vous voulez modifier l'adresse mail n'est pas vous"
+        'message' => "Bien essayé, mais l'utilisateur que vous 
+        voulez modifier l'adresse mail n'est pas vous"
     ];
     }
 
@@ -307,16 +364,16 @@ class UserManager extends AbstractManager
      * @param string pseudo of user
      * @return array result with message
      */
-    public function changeProfilPassword($pseudo)
+    public function changeProfilPassword(string $pseudo) : array
     {
-        if (roleChecker::role('Admin') ||
-            roleChecker::role('User') &&
+        if (RoleChecker::role('Admin') ||
+            RoleChecker::role('User') &&
             $this->request->session('pseudo') == $pseudo) {
-            $post = (new UserCheck())->changePasswordCheck();
+            $post = $this->userCheck->changePasswordCheck();
             if (empty($post['result'])) {
                 $password = password_hash($post['password'], PASSWORD_BCRYPT);
                 $this->database->prepare(
-                    (new UserQuery())->changePassword(),
+                    $this->userQuery->changePassword(),
                     [':password' => $password, ':pseudo' => $pseudo],
                     'update'
                 );
@@ -332,7 +389,8 @@ class UserManager extends AbstractManager
         }
         return [
             'result' => false,
-            'message' => "Bien essayé, mais l'utilisateur que vous voulez modifier le mot de passe n'est pas vous"
+            'message' => "Bien essayé, mais l'utilisateur que vous 
+            voulez modifier le mot de passe n'est pas vous"
         ];
     }
 
@@ -341,15 +399,15 @@ class UserManager extends AbstractManager
      * @param string pseudo of user
      * @return array result with message
      */
-    public function removeProfil($pseudo)
+    public function removeProfil(string $pseudo) : array
     {
-        if (roleChecker::role('Admin') ||
-            roleChecker::role('User') &&
+        if (RoleChecker::role('Admin') ||
+            RoleChecker::role('User') &&
             $this->request->session('pseudo') == $pseudo) {
-            $post = (new UserCheck())->RemoveProfilCheck();
-            if (empty($post['result'])) {
+            $post = $this->userCheck->RemoveProfilCheck();
+            if (empty($post['result']) && isset($post['pseudoConfirm'])) {
                 $this->database->prepare(
-                    (new UserQuery())->deleteProfil(),
+                    $this->userQuery->deleteProfil(),
                     [':pseudo' => $post['pseudoConfirm']],
                     'delete'
                 );
@@ -365,7 +423,8 @@ class UserManager extends AbstractManager
         }
         return [
                 'result' => false,
-                'message' => "Bien essayé, mais l'utilisateur que vous voulez supprimer n'est pas vous"
+                'message' => "Bien essayé, mais l'utilisateur que vous 
+                voulez supprimer n'est pas vous"
             ];
     }
 
@@ -373,10 +432,10 @@ class UserManager extends AbstractManager
      * get List of user
      * @return array users list
      */
-    public function getListUser()
+    public function getListUser() : array
     {
         $users = $this->database->prepare(
-            (new UserQuery())->getListUser(),
+            $this->userQuery->getListUser(),
             [],
             'select',
             'app\model\User'
@@ -389,13 +448,13 @@ class UserManager extends AbstractManager
      * @param string pseudo of user
      * @return array result with message
      */
-    public function changeRole($pseudo)
+    public function changeRole(string $pseudo) : array
     {
-        if (roleChecker::role('Admin')) {
-            $post = (new UserCheck())->changeRoleCheck();
+        if (RoleChecker::role('Admin')) {
+            $post = $this->userCheck->changeRoleCheck();
             if (empty($post['result'])) {
                 $this->database->prepare(
-                    (new UserQuery())->changeRole(),
+                    $this->userQuery->changeRole(),
                     [':idRole' => $post['role'], ':pseudo' => $pseudo],
                     'update'
                 );
@@ -420,12 +479,12 @@ class UserManager extends AbstractManager
      * @param string pseudo of user
      * @return array result with message
      */
-    public function removeAdminProfil($pseudo)
+    public function removeAdminProfil(string $pseudo) : array
     {
-        if (roleChecker::role('Admin')) {
+        if (RoleChecker::role('Admin')) {
             $user = (new User())->hydrate(
                 $this->database->prepare(
-                    (new UserQuery())
+                    $this->userQuery
                     ->getUserByPseudo(),
                     [':pseudo' => $pseudo],
                     "select",
@@ -434,14 +493,14 @@ class UserManager extends AbstractManager
                 )
             );
 
-            $post = (new UserCheck())->RemoveProfilAdminCheck();
+            $post = $this->userCheck->RemoveProfilAdminCheck();
             if (empty($post['result'])) {
                 $this->database->prepare(
-                    (new UserQuery())->deleteProfil(),
+                    $this->userQuery->deleteProfil(),
                     [':pseudo' => $post['pseudo']],
                     'delete'
                 );
-                (new UserMail())->reportBan($user->getemail(), $post['message']);
+                $this->userMail->reportBan($user->getemail(), $post['message']);
                 return [
                     'result' => true
                 ];
@@ -461,8 +520,8 @@ class UserManager extends AbstractManager
      * get new CSRF Token
      * @return string CSRF Token
      */
-    public function getCSRFToken()
+    public function getCSRFToken() : string
     {
-        return (new requestManager())->newCSRFToken();
+        return $this->request->newCSRFToken();
     }
 }

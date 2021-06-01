@@ -4,7 +4,12 @@ namespace core\auth;
 
 use core\request\requestManager;
 
-class roleChecker
+/**
+ * class for check if user role can use a function
+ * @author Tristan
+ * @version 1
+ */
+class RoleChecker
 {
     private const ROLE_RULE = [
         'User' =>  ['User','Writer','Admin'],
@@ -12,7 +17,12 @@ class roleChecker
         'Admin' => ['Admin']
     ];
 
-    public static function role($role)
+    /**
+     * Check if user actual role can use
+     * @param string role of function to check
+     * @return bool result of check of user role capacity
+     */
+    public static function role($role) : bool
     {
         $request = new requestManager();
         if ($request->isSetSession('role')) {
@@ -22,6 +32,11 @@ class roleChecker
         }
         return false;
     }
+
+    /**
+     * Check if user is a guest
+     * @return bool result of check if user is a guest
+     */
     public static function guest()
     {
         $request = new requestManager();

@@ -2,10 +2,10 @@
 
 {% block title %}Acceuil{% endblock %}
 {% block content %}
-	<div class="container">
+	<div class="centered text-center">
 		<div class="alert alert-{{ type }}" role="alert"> 
 			{{ message }} <br>
-			<a href={{ btnReturn }} class="btn btn-{{ type }}"> {{ btnMessage }}</a>
+			<a href={{ btnReturn }} class="mt-2 btn btn-{{ type }}"> {{ btnMessage }}</a>
 		</div>
 	</div>
 {% endblock %}
